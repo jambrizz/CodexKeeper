@@ -3,13 +3,15 @@ import { lusitana } from '@/app/ui/fonts';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Home',
+    title: 'Clients',
 };
-export default function Page() {
+
+export default async function Page() {
+
     return (
         <>
-            <h1 >Home</h1>
+        <h1 >Clients</h1>
+            
         </>
     );
-        
 }
