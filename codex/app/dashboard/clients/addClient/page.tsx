@@ -11,6 +11,8 @@ import {
     countyOfResidence
 } from '@/app/demo/demographics';
 import React, { useState } from 'react';
+import { clientSchema } from '@/app/model/clientValidation';
+import { z } from "zod";
 
 const fieldDisplayNames: { [key: string]: string } = {
     FirstName: "First Name",
@@ -41,9 +43,29 @@ const AddClient = () => {
 
     const createClient = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle form submission logic
-        console.log(formData);
+
+        try {
+            // Validate the formData against the schema
+            clientSchema.parse(formData);
+
+            // If validation passes, proceed with form submission logic
+            console.log("Validation passed", formData);
+
+            // Add your database submission logic here
+            // For example, call an API to save data:
+            // await fetch("/api/clients", {
+            //     method: "POST",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify(formData),
+            // });
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                console.error("Validation errors:", error.errors);
+                alert(error.errors.map((err) => err.message).join("\n"));
+            }
+        }
     };
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
