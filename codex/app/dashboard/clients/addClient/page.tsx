@@ -16,7 +16,9 @@ import { z } from "zod";
 
 const fieldDisplayNames: { [key: string]: string } = {
     FirstName: "First Name",
+    MiddleName: "Middle Name",
     LastName: "Last Name",
+    DOB: "Date of Birth",
     RaceEthnicIdentity: "Race/Ethnic Identity",
     ServiceLanguage: "Service Language",
     CountryOfOrigin: "Country of Origin",
@@ -30,7 +32,9 @@ const fieldDisplayNames: { [key: string]: string } = {
 const AddClient = () => {
     const [formData, setFormData] = useState({
         FirstName: '',
+        MiddleName: '',
         LastName: '',
+        DOB: '',
         RaceEthnicIdentity: '',
         ServiceLanguage: '',
         CountryOfOrigin: '',
@@ -202,7 +206,15 @@ const AddClient = () => {
                                         </option>
                                     ))}
                                 </select>
-                            ) : (
+                             ) : field === 'MiddleName' ? (
+                                 <input
+                                     type="text"
+                                     name={field}
+                                     placeholder={fieldDisplayNames[field]}
+                                     className="border border-gray-400 rounded p-4 w-64"
+                                     onChange={handleInputChange}
+                                  />
+                             ): (
                                 <input
                                     type="text"
                                     name={field}

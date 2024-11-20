@@ -1,122 +1,146 @@
-// import bcrypt from 'bcrypt';
-// import { db } from '@vercel/postgres';
-// import { invoices, customers, revenue, users } from '../lib/placeholder-data';
+import bcrypt from 'bcrypt';
+import { db } from '@vercel/postgres';
+import { users, clients } from '../lib/placeholder-data';
 
-// const client = await db.connect();
+async function seedUsers() {
+    const client = await db.connect();
 
-// async function seedUsers() {
-//   await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-//   await client.sql`
-//     CREATE TABLE IF NOT EXISTS users (
-//       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-//       name VARCHAR(255) NOT NULL,
-//       email TEXT NOT NULL UNIQUE,
-//       password TEXT NOT NULL
-//     );
-//   `;
+    try {
+        await client.sql`BEGIN`;
 
-//   const insertedUsers = await Promise.all(
-//     users.map(async (user) => {
-//       const hashedPassword = await bcrypt.hash(user.password, 10);
-//       return client.sql`
-//         INSERT INTO users (id, name, email, password)
-//         VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
-//         ON CONFLICT (id) DO NOTHING;
-//       `;
-//     }),
-//   );
+        // Ensure the `uuid-ossp` extension exists
+        await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
-//   return insertedUsers;
-// }
+        // Create `users` table if it doesn't exist
+        await client.sql`
+            CREATE TABLE IF NOT EXISTS users (
+                id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+                firstname VARCHAR(255) NOT NULL,
+                lastname VARCHAR(255) NOT NULL,
+                email TEXT NOT NULL UNIQUE,
+                password TEXT NOT NULL,
+                position TEXT NOT NULL,
+                auth_level INT NOT NULL
+            );
+        `;
 
-// async function seedInvoices() {
-//   await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+        // Insert users into the table
+        const insertedUsers = await Promise.all(
+            users.map(async (user) => {
+                const hashedPassword = await bcrypt.hash(user.password, 10);
+                return client.sql`
+                    INSERT INTO users (id, firstname, lastname, email, password, position, auth_level)
+                    VALUES (${user.id}, ${user.firstname}, ${user.lastname}, ${user.email}, 
+                        ${hashedPassword}, ${user.position}, ${user.auth_level})
+                    ON CONFLICT (id) DO NOTHING;
+                `;
+            })
+        );
 
-//   await client.sql`
-//     CREATE TABLE IF NOT EXISTS invoices (
-//       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-//       customer_id UUID NOT NULL,
-//       amount INT NOT NULL,
-//       status VARCHAR(255) NOT NULL,
-//       date DATE NOT NULL
-//     );
-//   `;
+        await client.sql`COMMIT`;
+        console.log('Seed data successfully:', insertedUsers);
+        return { message: 'Seed data successfully' };
+    } catch (error) {
+        await client.sql`ROLLBACK`;
+        handleError(error, 'Error seeding users');
+    } finally {
+        client.release();
+    }
+}
 
-//   const insertedInvoices = await Promise.all(
-//     invoices.map(
-//       (invoice) => client.sql`
-//         INSERT INTO invoices (customer_id, amount, status, date)
-//         VALUES (${invoice.customer_id}, ${invoice.amount}, ${invoice.status}, ${invoice.date})
-//         ON CONFLICT (id) DO NOTHING;
-//       `,
-//     ),
-//   );
+async function seedClients() {
+    const client = await db.connect();
 
-//   return insertedInvoices;
-// }
+    try {
+        await client.sql`BEGIN`;
 
-// async function seedCustomers() {
-//   await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+        // Ensure the `uuid-ossp` extension exists
+        await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
-//   await client.sql`
-//     CREATE TABLE IF NOT EXISTS customers (
-//       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-//       name VARCHAR(255) NOT NULL,
-//       email VARCHAR(255) NOT NULL,
-//       image_url VARCHAR(255) NOT NULL
-//     );
-//   `;
+        // Create `clients` table if it doesn't exist
+        await client.sql`
+            CREATE TABLE IF NOT EXISTS clients (
+                id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+                firstname VARCHAR(255) NOT NULL,
+                middlename VARCHAR(255),
+                lastname VARCHAR(255) NOT NULL,
+                dob DATE NOT NULL,
+                race_ethnic_identity VARCHAR(255) NOT NULL,
+                service_language VARCHAR(255) NOT NULL,
+                country_of_origin VARCHAR(255) NOT NULL,
+                gender VARCHAR(255) NOT NULL,
+                sexual_orientation VARCHAR(255) NOT NULL,
+                age VARCHAR(255) NOT NULL,
+                education_level VARCHAR(255) NOT NULL,
+                county_of_residence VARCHAR(255) NOT NULL
+            );
+        `;
 
-//   const insertedCustomers = await Promise.all(
-//     customers.map(
-//       (customer) => client.sql`
-//         INSERT INTO customers (id, name, email, image_url)
-//         VALUES (${customer.id}, ${customer.name}, ${customer.email}, ${customer.image_url})
-//         ON CONFLICT (id) DO NOTHING;
-//       `,
-//     ),
-//   );
+        // Insert clients into the table
+        const insertedClients = await Promise.all(
+            clients.map(async (clientData) =>
+                client.sql`
+                    INSERT INTO clients (
+                        id, FirstName, MiddleName, LastName, DOB, RaceEthnicIdentity, 
+                        ServiceLanguage, CountryOfOrigin, Gender, SexualOrientation, 
+                        Age, EducationLevel, CountyOfResidence
+                    )
+                    VALUES (
+                        ${clientData.id}, ${clientData.FirstName}, ${clientData.MiddleName}, 
+                        ${clientData.LastName}, ${clientData.DOB}, ${clientData.RaceEthnicIdentity}, 
+                        ${clientData.ServiceLanguage}, ${clientData.CountryOfOrigin}, 
+                        ${clientData.Gender}, ${clientData.SexualOrientation}, 
+                        ${clientData.Age}, ${clientData.EducationLevel}, 
+                        ${clientData.CountyOfResidence}
+                    )
+                    ON CONFLICT (id) DO NOTHING;
+                `
+            )
+        );
 
-//   return insertedCustomers;
-// }
+        await client.sql`COMMIT`;
+        console.log('Seed data successfully:', insertedClients);
+        return { message: 'Seed data successfully' };
+    } catch (error) {
+        await client.sql`ROLLBACK`;
+        handleError(error, 'Error seeding clients');
+    } finally {
+        client.release();
+    }
+}
 
-// async function seedRevenue() {
-//   await client.sql`
-//     CREATE TABLE IF NOT EXISTS revenue (
-//       month VARCHAR(4) NOT NULL UNIQUE,
-//       revenue INT NOT NULL
-//     );
-//   `;
 
-//   const insertedRevenue = await Promise.all(
-//     revenue.map(
-//       (rev) => client.sql`
-//         INSERT INTO revenue (month, revenue)
-//         VALUES (${rev.month}, ${rev.revenue})
-//         ON CONFLICT (month) DO NOTHING;
-//       `,
-//     ),
-//   );
+export async function POST() {
+    try {
+        // Call both seed functions
+        const userSeedResult = await seedUsers();
+        const clientSeedResult = await seedClients();
 
-//   return insertedRevenue;
-// }
+        return new Response(
+            JSON.stringify({ userSeedResult, clientSeedResult }),
+            {
+                status: 200,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        return new Response(JSON.stringify({ error: errorMessage }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
+}
 
-export async function GET() {
-  return Response.json({
-    message:
-      'Uncomment this file and remove this line. You can delete this file when you are finished.',
-  });
-  // try {
-  //   await client.sql`BEGIN`;
-  //   await seedUsers();
-  //   await seedCustomers();
-  //   await seedInvoices();
-  //   await seedRevenue();
-  //   await client.sql`COMMIT`;
-
-  //   return Response.json({ message: 'Database seeded successfully' });
-  // } catch (error) {
-  //   await client.sql`ROLLBACK`;
-  //   return Response.json({ error }, { status: 500 });
-  // }
+// Helper function for error handling
+function handleError(error: unknown, context: string): never {
+    if (error instanceof Error) {
+        console.error(`${context}:`, error.message);
+        throw new Error(`${context}: ${error.message}`);
+    } else {
+        console.error(`${context}: Unknown error`, error);
+        throw new Error(`${context}: Unknown error occurred`);
+    }
 }
