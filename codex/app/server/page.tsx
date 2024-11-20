@@ -1,6 +1,6 @@
 import { sql } from "@vercel/postgres";
 import { JSX } from "react";
-
+/*
 export default async function Cart({
     params
 }: {
@@ -17,4 +17,4 @@ export default async function Cart({
             ))}
         </div>
     );
-}
+}*/
