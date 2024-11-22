@@ -38,8 +38,8 @@ async function seedUsers() {
         );
 
         await client.sql`COMMIT`;
-        console.log('Seed data successfully:', insertedUsers);
-        return { message: 'Seed data successfully' };
+        console.log('Seeded users successfully:', insertedUsers);
+        return { message: 'Seeded users successfully' };
     } catch (error) {
         await client.sql`ROLLBACK`;
         handleError(error, 'Error seeding users');
@@ -81,9 +81,9 @@ async function seedClients() {
             clients.map(async (clientData) =>
                 client.sql`
                     INSERT INTO clients (
-                        id, FirstName, MiddleName, LastName, DOB, RaceEthnicIdentity, 
-                        ServiceLanguage, CountryOfOrigin, Gender, SexualOrientation, 
-                        Age, EducationLevel, CountyOfResidence
+                        id, firstname, middlename, lastname, dob, race_ethnic_identity, 
+                        service_language, country_of_origin, gender, sexual_orientation, 
+                        age, education_level, county_of_residence
                     )
                     VALUES (
                         ${clientData.id}, ${clientData.FirstName}, ${clientData.MiddleName}, 
@@ -99,8 +99,8 @@ async function seedClients() {
         );
 
         await client.sql`COMMIT`;
-        console.log('Seed data successfully:', insertedClients);
-        return { message: 'Seed data successfully' };
+        console.log('Seeded clients successfully:', insertedClients);
+        return { message: 'Seeded clients successfully' };
     } catch (error) {
         await client.sql`ROLLBACK`;
         handleError(error, 'Error seeding clients');
@@ -109,22 +109,24 @@ async function seedClients() {
     }
 }
 
-
-export async function POST() {
+async function seedData() {
     try {
-        // Call both seed functions
         const userSeedResult = await seedUsers();
         const clientSeedResult = await seedClients();
 
-        return new Response(
-            JSON.stringify({ userSeedResult, clientSeedResult }),
-            {
-                status: 200,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
+        return { userSeedResult, clientSeedResult };
+    } catch (error) {
+        handleError(error, 'Error seeding data');
+    }
+}
+
+export async function GET() {
+    try {
+        const result = await seedData();
+        return new Response(JSON.stringify(result), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+        });
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         return new Response(JSON.stringify({ error: errorMessage }), {
