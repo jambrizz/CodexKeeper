@@ -63,19 +63,19 @@ const AddProcessPage = () => {
                 label: `${client.firstname} ${client.middlename || ''} ${client.lastname}`.trim()
             })));
         };
-        */
+        
         // Fetch users from the database
         const fetchUsers = async () => {
-            const response = await fetch('/api/users'); // Adjust API endpoint as needed
+            const response = await fetch('/api/users'); // Ad
             const data = await response.json();
             setUsers(data.map(user => ({
                 value: user.id,
                 label: `${user.firstname} ${user.lastname}`
             })));
         };
-
+        */
         //fetchClients();
-        fetchUsers();
+        //fetchUsers();
     }, []);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
