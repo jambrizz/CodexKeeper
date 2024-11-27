@@ -1,3 +1,4 @@
+/*
 import bcrypt from 'bcrypt';
 import { db } from '@vercel/postgres';
 import { users, clients } from '../lib/placeholder-data';
@@ -146,3 +147,4 @@ function handleError(error: unknown, context: string): never {
         throw new Error(`${context}: Unknown error occurred`);
     }
 }
+*/

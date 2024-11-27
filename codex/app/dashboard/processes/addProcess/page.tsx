@@ -53,10 +53,10 @@ const AddProcessPage = () => {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
-        /*
+        
         // Fetch clients from the database
         const fetchClients = async () => {
-            const response = await fetch('/api/clients'); // Adjust API endpoint as needed
+            const response = await fetch('/api/clients'); // I think I will need to modify im getting an error
             const data = await response.json();
             setClients(data.map(client => ({
                 value: client.id,
@@ -66,16 +66,16 @@ const AddProcessPage = () => {
         
         // Fetch users from the database
         const fetchUsers = async () => {
-            const response = await fetch('/api/users'); // Ad
+            const response = await fetch('/api/users'); // I think I will need to modify im getting an error
             const data = await response.json();
             setUsers(data.map(user => ({
                 value: user.id,
                 label: `${user.firstname} ${user.lastname}`
             })));
         };
-        */
-        //fetchClients();
-        //fetchUsers();
+        
+        fetchClients();
+        fetchUsers();
     }, []);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -152,7 +152,7 @@ const AddProcessPage = () => {
                             >
                                 <option value="" disabled>Select {fieldDisplayNames[field]}</option>
                                 {users.map(user => (
-                                    <option key={user.value} value={user.value}>
+                                    <option key={user.value} value={user.value}> 
                                         {user.label}
                                     </option>
                                 ))}
