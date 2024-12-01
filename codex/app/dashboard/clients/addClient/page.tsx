@@ -8,11 +8,12 @@ import {
     sexualOrientation,
     age,
     educationLevel,
-    countyOfResidence
-} from '@/app/demo/demographics';
-import React, { useState } from 'react';
-import { clientSchema } from '@/app/model/clientValidation';
+    countyOfResidence,
+} from "@/app/demo/demographics";
+import React, { useState } from "react";
+import { clientSchema } from "@/app/model/clientValidation";
 import { z } from "zod";
+//import { connectDb } from '@/app/lib/db';
 
 const fieldDisplayNames: { [key: string]: string } = {
     FirstName: "First Name",
@@ -26,215 +27,148 @@ const fieldDisplayNames: { [key: string]: string } = {
     SexualOrientation: "Sexual Orientation",
     Age: "Age",
     EducationLevel: "Education Level",
-    CountyOfResidence: "County of Residence"
+    CountyOfResidence: "County of Residence",
 };
 
 const AddClient = () => {
     const [formData, setFormData] = useState({
-        FirstName: '',
-        MiddleName: '',
-        LastName: '',
-        DOB: '',
-        RaceEthnicIdentity: '',
-        ServiceLanguage: '',
-        CountryOfOrigin: '',
-        Gender: '',
-        SexualOrientation: '',
-        Age: '',
-        EducationLevel: '',
-        CountyOfResidence: ''
+        FirstName: "",
+        MiddleName: "",
+        LastName: "",
+        DOB: "",
+        RaceEthnicIdentity: "",
+        ServiceLanguage: "",
+        CountryOfOrigin: "",
+        Gender: "",
+        SexualOrientation: "",
+        Age: "",
+        EducationLevel: "",
+        CountyOfResidence: "",
     });
 
     const createClient = async (e: React.FormEvent) => {
         e.preventDefault();
 
         try {
-            // Validate the formData against the schema
-            clientSchema.parse(formData);
+            const validatedData = clientSchema.parse({
+                ...formData,
+                MiddleName: formData.MiddleName || null, // Convert empty MiddleName to null
+            });
 
-            // If validation passes, proceed with form submission logic
-            console.log("Validation passed", formData);
+            const payload = {
+                ...validatedData,
+                datetimeStamp: new Date().toISOString(),
+                createdBy: "Jovani Ambriz",
+            };
 
-            // Add your database submission logic here
-            // For example, call an API to save data:
-            // await fetch("/api/clients", {
-            //     method: "POST",
-            //     headers: { "Content-Type": "application/json" },
-            //     body: JSON.stringify(formData),
-            // });
-        } catch (error) {
-            if (error instanceof z.ZodError) {
+            const response = await fetch("/api/clients", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text(); // Try to parse error response as text
+                console.error("Error response:", errorText);
+                throw new Error("Failed to add client: " + errorText);
+            }
+
+            const result = await response.json();
+            console.log("Client added successfully:", result);
+            alert("Client added successfully!");
+            setFormData({
+                FirstName: "",
+                MiddleName: "",
+                LastName: "",
+                DOB: "",
+                RaceEthnicIdentity: "",
+                ServiceLanguage: "",
+                CountryOfOrigin: "",
+                Gender: "",
+                SexualOrientation: "",
+                Age: "",
+                EducationLevel: "",
+                CountyOfResidence: "",
+            });
+        } catch (error: unknown) { // Explicitly type the error as unknown
+            if (error instanceof z.ZodError) { // Check if it's a ZodError
                 console.error("Validation errors:", error.errors);
                 alert(error.errors.map((err) => err.message).join("\n"));
+            } else if (error instanceof Error) { // Check if it's a generic Error
+                console.error("Unexpected error:", error.message);
+                alert(error.message || "An unexpected error occurred. Please try again.");
+            } else {
+                console.error("Unknown error:", error);
+                alert("An unexpected error occurred. Please try again.");
             }
         }
     };
-
+   
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     return (
-        <>
-            <div className="flex flex-col items-center">
-                <h1 className="text-4xl mb1">Add Client</h1>
-                <form onSubmit={createClient} className="flex flex-col items-center">
-                    {Object.keys(formData).map(field => (
-                        <div key={field} className="flex flex-col items-start mb-2">
-                            <label className="font-semibold mb-1">
-                                {fieldDisplayNames[field] || field}
-                            </label>
-                            {field === 'RaceEthnicIdentity' ? (
-                                <select
-                                    name={field}
-                                    className="border border-gray-400 rounded p-4 w-64"
-                                    onChange={handleInputChange}
-                                    defaultValue=""
-                                    required
-                                >
-                                    <option value="" disabled>Select {fieldDisplayNames[field]}</option>
-                                    {racialEthnicIdentity.map(identity => (
-                                        <option key={identity} value={identity}>
-                                            {identity}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : field === 'ServiceLanguage' ? (
-                                <select
-                                    name={field}
-                                    className="border border-gray-400 rounded p-4 w-64"
-                                    onChange={handleInputChange}
-                                    defaultValue=""
-                                    required
-                                >
-                                    <option value="" disabled>Select {fieldDisplayNames[field]}</option>
-                                    {serviceLanguages.map(language => (
-                                        <option key={language} value={language}>
-                                            {language}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : field === 'CountryOfOrigin' ? (
-                                <select
-                                    name={field}
-                                    className="border border-gray-400 rounded p-4 w-64"
-                                    onChange={handleInputChange}
-                                    defaultValue=""
-                                    required
-                                >
-                                    <option value="" disabled>Select {fieldDisplayNames[field]}</option>
-                                    {countryOfOrigin.map(country => (
-                                        <option key={country} value={country}>
-                                            {country}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : field === 'Gender' ? (
-                                <select
-                                    name={field}
-                                    className="border border-gray-400 rounded p-4 w-64"
-                                    onChange={handleInputChange}
-                                    defaultValue=""
-                                    required
-                                >
-                                    <option value="" disabled>Select {fieldDisplayNames[field]}</option>
-                                    {gender.map(gender => (
-                                        <option key={gender} value={gender}>
-                                            {gender}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : field === 'SexualOrientation' ? (
-                                <select
-                                    name={field}
-                                    className="border border-gray-400 rounded p-4 w-64"
-                                    onChange={handleInputChange}
-                                    defaultValue=""
-                                    required
-                                >
-                                    <option value="" disabled>Select {fieldDisplayNames[field]}</option>
-                                    {sexualOrientation.map(orientation => (
-                                        <option key={orientation} value={orientation}>
-                                            {orientation}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : field === 'Age' ? (
-                                <select
-                                    name={field}
-                                    className="border border-gray-400 rounded p-4 w-64"
-                                    onChange={handleInputChange}
-                                    defaultValue=""
-                                    required
-                                >
-                                    <option value="" disabled>Select {fieldDisplayNames[field]}</option>
-                                    {age.map(age => (
-                                        <option key={age} value={age}>
-                                            {age}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : field === 'EducationLevel' ? (
-                                <select
-                                    name={field}
-                                    className="border border-gray-400 rounded p-4 w-64"
-                                    onChange={handleInputChange}
-                                    defaultValue=""
-                                    required
-                                >
-                                    <option value="" disabled>Select {fieldDisplayNames[field]}</option>
-                                    {educationLevel.map(level => (
-                                        <option key={level} value={level}>
-                                            {level}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : field === 'CountyOfResidence' ? (
-                                <select
-                                    name={field}
-                                    className="border border-gray-400 rounded p-4 w-64"
-                                    onChange={handleInputChange}
-                                    defaultValue=""
-                                    required
-                                >
-                                    <option value="" disabled>Select {fieldDisplayNames[field]}</option>
-                                    {countyOfResidence.map(county => (
-                                        <option key={county} value={county}>
-                                            {county}
-                                        </option>
-                                    ))}
-                                </select>
-                             ) : field === 'MiddleName' ? (
-                                 <input
-                                     type="text"
-                                     name={field}
-                                     placeholder={fieldDisplayNames[field]}
-                                     className="border border-gray-400 rounded p-4 w-64"
-                                     onChange={handleInputChange}
-                                  />
-                             ): (
-                                <input
-                                    type="text"
-                                    name={field}
-                                    placeholder={fieldDisplayNames[field]}
-                                    className="border border-gray-400 rounded p-4 w-64"
-                                    onChange={handleInputChange}
-                                    required
-                                />
-                            )}
-                        </div>
-                    ))}
-                    <button
-                        type="submit"
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-                    >
-                        Submit
-                    </button>
-                </form>
-            </div>
-        </>
+        <div className="flex flex-col items-center">
+            <h1 className="text-4xl mb-4">Add Client</h1>
+            <form onSubmit={createClient} className="flex flex-col items-center">
+                {Object.keys(formData).map((field) => (
+                    <div key={field} className="flex flex-col items-start mb-2">
+                        <label className="font-semibold mb-1">
+                            {fieldDisplayNames[field] || field}
+                        </label>
+                        {["RaceEthnicIdentity", "ServiceLanguage", "CountryOfOrigin", "Gender", "SexualOrientation", "Age", "EducationLevel", "CountyOfResidence"].includes(field) ? (
+                            <select
+                                name={field}
+                                className="border border-gray-400 rounded p-2 w-64"
+                                onChange={handleInputChange}
+                                value={formData[field as keyof typeof formData]}
+                                required={field !== "MiddleName"}
+                            >
+                                <option value="" disabled>
+                                    Select {fieldDisplayNames[field]}
+                                </option>
+                                {(field === "RaceEthnicIdentity" ? racialEthnicIdentity :
+                                    field === "ServiceLanguage" ? serviceLanguages :
+                                        field === "CountryOfOrigin" ? countryOfOrigin :
+                                            field === "Gender" ? gender :
+                                                field === "SexualOrientation" ? sexualOrientation :
+                                                    field === "Age" ? age :
+                                                        field === "EducationLevel" ? educationLevel :
+                                                            countyOfResidence
+                                ).map((option) => (
+                                    <option key={option} value={option}>
+                                        {option}
+                                    </option>
+                                ))}
+                            </select>
+                        ) : (
+                            <input
+                                type={field === "DOB" ? "date" : "text"}
+                                name={field}
+                                placeholder={fieldDisplayNames[field]}
+                                className="border border-gray-400 rounded p-2 w-64"
+                                onChange={handleInputChange}
+                                value={formData[field as keyof typeof formData]}
+                                required={field !== "MiddleName"}
+                            />
+                        )}
+                    </div>
+                ))}
+                {/* Hidden Inputs */}
+                <input type="hidden" name="datetimeStamp" value={new Date().toISOString()} />
+                <input type="hidden" name="createdBy" value="Jovani Ambriz" />
+
+                <button
+                    type="submit"
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                >
+                    Submit
+                </button>
+            </form>
+        </div>
     );
 };
 
