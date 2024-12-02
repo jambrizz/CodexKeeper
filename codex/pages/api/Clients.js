@@ -1,4 +1,12 @@
-import { connectDb } from "../../lib/db";
+'use server';
+
+import { connectDb } from "@/app/lib/db";
+
+export const config = {
+    api: {
+        bodyParser: true, // Ensure body parsing middleware is enabled
+    },
+};
 
 export default async function handler(req, res) {
     const { method } = req;
@@ -17,7 +25,12 @@ export default async function handler(req, res) {
     }
 }
 
+// Define the createClient function
 async function createClient(req, res) {
+    if (req.method !== "POST") {
+        return res.status(405).json({ error: "Method not allowed" });
+    }
+
     const {
         FirstName,
         MiddleName,
@@ -35,9 +48,11 @@ async function createClient(req, res) {
         createdBy,
     } = req.body;
 
-    // Validate required fields
-    if (!FirstName || !LastName || !DOB) {
-        return res.status(400).json({ error: "Missing required fields" });
+    if (!FirstName || !LastName || !DOB || !datetimeStamp || !createdBy) {
+        return res.status(400).json({
+            error: "Missing required fields",
+            requiredFields: ["FirstName", "LastName", "DOB", "datetimeStamp", "createdBy"],
+        });
     }
 
     let client;
@@ -53,21 +68,32 @@ async function createClient(req, res) {
             RETURNING *;
         `;
         const values = [
-            FirstName, MiddleName || null, LastName, DOB, RaceEthnicIdentity, ServiceLanguage,
-            CountryOfOrigin, Gender, SexualOrientation, Age, EducationLevel, CountyOfResidence,
-            datetimeStamp, createdBy,
+            FirstName, MiddleName || null, LastName, DOB, RaceEthnicIdentity || null,
+            ServiceLanguage || null, CountryOfOrigin || null, Gender || null,
+            SexualOrientation || null, Age || null, EducationLevel || null,
+            CountyOfResidence || null, datetimeStamp, createdBy,
         ];
 
         const result = await client.query(query, values);
 
-        // Send back the created client
-        res.status(201).json(result.rows[0]);
+        res.status(201).json({ message: "Client created successfully", client: result.rows[0] });
     } catch (error) {
         console.error("Error creating client:", error);
-
-        // Return a JSON error response
-        res.status(500).json({ error: "Internal Server Error", details: error.message });
+        res.status(500).json({ error: "Internal Server Error", details: error.stack });
     } finally {
         if (client) await client.end();
     }
+}
+
+// Define placeholders for missing methods
+async function getClients(req, res) {
+    res.status(200).json({ message: "Fetch clients not implemented yet." });
+}
+
+async function updateClient(req, res) {
+    res.status(200).json({ message: "Update client not implemented yet." });
+}
+
+async function deleteClient(req, res) {
+    res.status(200).json({ message: "Delete client not implemented yet." });
 }

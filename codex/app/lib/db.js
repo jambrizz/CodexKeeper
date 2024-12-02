@@ -8,9 +8,10 @@ export const connectDb = async () => {
 
     try {
         await client.connect();
-        return client;
+        console.log("Connected to database successfully.");
     } catch (error) {
-        console.error('Error connecting to the database:', error);
-        throw error;
+        console.error("Database connection failed:", error);
+        throw new Error("Database connection error");
     }
+
 };

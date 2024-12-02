@@ -13,7 +13,6 @@ import {
 import React, { useState } from "react";
 import { clientSchema } from "@/app/model/clientValidation";
 import { z } from "zod";
-//import { connectDb } from '@/app/lib/db';
 
 const fieldDisplayNames: { [key: string]: string } = {
     FirstName: "First Name",
@@ -44,123 +43,111 @@ const AddClient = () => {
         Age: "",
         EducationLevel: "",
         CountyOfResidence: "",
+        datetimeStamp: new Date().toISOString(),
+        createdBy: "Jovani Ambriz",
     });
-
-    const createClient = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        try {
-            const validatedData = clientSchema.parse({
-                ...formData,
-                MiddleName: formData.MiddleName || null, // Convert empty MiddleName to null
-            });
-
-            const payload = {
-                ...validatedData,
-                datetimeStamp: new Date().toISOString(),
-                createdBy: "Jovani Ambriz",
-            };
-
-            const response = await fetch("/api/clients", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text(); // Try to parse error response as text
-                console.error("Error response:", errorText);
-                throw new Error("Failed to add client: " + errorText);
-            }
-
-            const result = await response.json();
-            console.log("Client added successfully:", result);
-            alert("Client added successfully!");
-            setFormData({
-                FirstName: "",
-                MiddleName: "",
-                LastName: "",
-                DOB: "",
-                RaceEthnicIdentity: "",
-                ServiceLanguage: "",
-                CountryOfOrigin: "",
-                Gender: "",
-                SexualOrientation: "",
-                Age: "",
-                EducationLevel: "",
-                CountyOfResidence: "",
-            });
-        } catch (error: unknown) { // Explicitly type the error as unknown
-            if (error instanceof z.ZodError) { // Check if it's a ZodError
-                console.error("Validation errors:", error.errors);
-                alert(error.errors.map((err) => err.message).join("\n"));
-            } else if (error instanceof Error) { // Check if it's a generic Error
-                console.error("Unexpected error:", error.message);
-                alert(error.message || "An unexpected error occurred. Please try again.");
-            } else {
-                console.error("Unknown error:", error);
-                alert("An unexpected error occurred. Please try again.");
-            }
-        }
-    };
-   
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        try {
+            // Normalize MiddleName to null if empty
+            const normalizedData = {
+                ...formData,
+                MiddleName: formData.MiddleName.trim() || null,
+            };
+
+            // Validate form data
+            clientSchema.parse(normalizedData);
+
+            // Send data to the server
+            const response = await fetch("/api/Clients", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(normalizedData),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            console.log("Client created successfully:", result);
+            alert("Client added successfully!");
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                console.error("Validation errors:", error.errors);
+                alert("Validation failed. Please check your inputs.");
+            } else if (error instanceof Error) {
+                console.error("Submission error:", error.message);
+                alert(`Submission failed: ${error.message}`);
+            }
+        }
+    };
+
     return (
         <div className="flex flex-col items-center">
             <h1 className="text-4xl mb-4">Add Client</h1>
-            <form onSubmit={createClient} className="flex flex-col items-center">
-                {Object.keys(formData).map((field) => (
-                    <div key={field} className="flex flex-col items-start mb-2">
-                        <label className="font-semibold mb-1">
-                            {fieldDisplayNames[field] || field}
-                        </label>
-                        {["RaceEthnicIdentity", "ServiceLanguage", "CountryOfOrigin", "Gender", "SexualOrientation", "Age", "EducationLevel", "CountyOfResidence"].includes(field) ? (
-                            <select
-                                name={field}
-                                className="border border-gray-400 rounded p-2 w-64"
-                                onChange={handleInputChange}
-                                value={formData[field as keyof typeof formData]}
-                                required={field !== "MiddleName"}
-                            >
-                                <option value="" disabled>
-                                    Select {fieldDisplayNames[field]}
-                                </option>
-                                {(field === "RaceEthnicIdentity" ? racialEthnicIdentity :
-                                    field === "ServiceLanguage" ? serviceLanguages :
-                                        field === "CountryOfOrigin" ? countryOfOrigin :
-                                            field === "Gender" ? gender :
-                                                field === "SexualOrientation" ? sexualOrientation :
-                                                    field === "Age" ? age :
-                                                        field === "EducationLevel" ? educationLevel :
-                                                            countyOfResidence
-                                ).map((option) => (
-                                    <option key={option} value={option}>
-                                        {option}
+            <form onSubmit={handleSubmit} className="flex flex-col items-center">
+                {Object.keys(formData).map((field) =>
+                    field !== "datetimeStamp" && field !== "createdBy" ? (
+                        <div key={field} className="flex flex-col items-start mb-2">
+                            <label className="font-semibold mb-1">
+                                {fieldDisplayNames[field] || field}
+                            </label>
+                            {[
+                                "RaceEthnicIdentity",
+                                "ServiceLanguage",
+                                "CountryOfOrigin",
+                                "Gender",
+                                "SexualOrientation",
+                                "Age",
+                                "EducationLevel",
+                                "CountyOfResidence",
+                            ].includes(field) ? (
+                                <select
+                                    name={field}
+                                    className="border border-gray-400 rounded p-2 w-64"
+                                    onChange={handleInputChange}
+                                    value={formData[field as keyof typeof formData]}
+                                    required={field !== "MiddleName"}
+                                >
+                                    <option value="" disabled>
+                                        Select {fieldDisplayNames[field]}
                                     </option>
-                                ))}
-                            </select>
-                        ) : (
-                            <input
-                                type={field === "DOB" ? "date" : "text"}
-                                name={field}
-                                placeholder={fieldDisplayNames[field]}
-                                className="border border-gray-400 rounded p-2 w-64"
-                                onChange={handleInputChange}
-                                value={formData[field as keyof typeof formData]}
-                                required={field !== "MiddleName"}
-                            />
-                        )}
-                    </div>
-                ))}
-                {/* Hidden Inputs */}
-                <input type="hidden" name="datetimeStamp" value={new Date().toISOString()} />
-                <input type="hidden" name="createdBy" value="Jovani Ambriz" />
-
+                                    {(field === "RaceEthnicIdentity" ? racialEthnicIdentity :
+                                        field === "ServiceLanguage" ? serviceLanguages :
+                                            field === "CountryOfOrigin" ? countryOfOrigin :
+                                                field === "Gender" ? gender :
+                                                    field === "SexualOrientation" ? sexualOrientation :
+                                                        field === "Age" ? age :
+                                                            field === "EducationLevel" ? educationLevel :
+                                                                countyOfResidence
+                                    ).map((option) => (
+                                        <option key={option} value={option}>
+                                            {option}
+                                        </option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <input
+                                    type={field === "DOB" ? "date" : "text"}
+                                    name={field}
+                                    placeholder={fieldDisplayNames[field]}
+                                    className="border border-gray-400 rounded p-2 w-64"
+                                    onChange={handleInputChange}
+                                    value={formData[field as keyof typeof formData]}
+                                    required={field !== "MiddleName"}
+                                />
+                            )}
+                        </div>
+                    ) : null
+                )}
                 <button
                     type="submit"
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
