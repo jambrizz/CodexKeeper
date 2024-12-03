@@ -1,3 +1,4 @@
+/*
 import { Revenue } from './definitions';
 
 export const formatCurrency = (amount: number) => {
@@ -67,3 +68,4 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
     totalPages,
   ];
 };
+*/
