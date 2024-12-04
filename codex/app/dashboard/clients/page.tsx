@@ -33,6 +33,12 @@ const ClientsPage = () => {
                     </button>
                 </div>
             </div>
+            <div id="searchFeature" className="flex flex-col items-center">
+
+            </div>
+            <div id="displayClients" className="flex flex-col items-center">
+                
+            </div>
         </>
     );
 };
