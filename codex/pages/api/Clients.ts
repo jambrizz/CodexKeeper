@@ -1,8 +1,7 @@
-import { z } from 'zod';
-import { sql } from '@vercel/postgres';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { z } from "zod";
+import { sql } from "@vercel/postgres";
+import { NextApiRequest, NextApiResponse } from "next";
 
-// Define schema for validation
 const ClientSchema = z.object({
     FirstName: z.string().nonempty({ message: "First name is required" }),
     MiddleName: z.string().nullable(),
@@ -21,70 +20,151 @@ const ClientSchema = z.object({
 });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
+    if (req.method === "POST") {
+        const validatedFields = ClientSchema.safeParse(req.body);
+        if (!validatedFields.success) {
+            return res.status(400).json({
+                errors: validatedFields.error.flatten().fieldErrors,
+                message: "Validation failed. Please check your inputs.",
+            });
+        }
 
-    console.log("Attempting to connect to the database...");
-    try {
-        await sql`SELECT 1`; // Quick test query
-        console.log("Database connection established successfully.");
-    } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : "Unknown database error";
-        console.error("Error connecting to the database:", errorMessage);
-        return res.status(500).json({ message: "Database connection failed.", details: errorMessage });
-    }
+        const {
+            FirstName,
+            MiddleName,
+            LastName,
+            DOB,
+            RaceEthnicIdentity,
+            ServiceLanguage,
+            CountryOfOrigin,
+            Gender,
+            SexualOrientation,
+            Age,
+            EducationLevel,
+            CountyOfResidence,
+            datetimeStamp,
+            createdBy,
+        } = validatedFields.data;
 
-    console.log("Received form data:", req.body);
+        try {
+            const result = await sql`
+                INSERT INTO clients (
+                    firstname, middlename, lastname, dob, raceethnicidentity, servicelanguage,
+                    countryoforigin, gender, sexualorientation, age, educationlevel, countyofresidence, datetimestamp, createdby
+                )
+                VALUES (${FirstName}, ${MiddleName || null}, ${LastName}, ${DOB}, ${RaceEthnicIdentity}, ${ServiceLanguage},
+                    ${CountryOfOrigin}, ${Gender}, ${SexualOrientation}, ${Age}, ${EducationLevel}, ${CountyOfResidence}, ${datetimeStamp}, ${createdBy}
+                )
+                RETURNING *;
+            `;
+            return res.status(201).json(result.rows[0]);
+        } catch (err: unknown) {
+            console.error("Error during database operation:", err);
+            return res.status(500).json({ message: "Database insertion failed.", details: err });
+        }
+    } else if (req.method === "GET") {
+        const { id } = req.query;
 
-    const validatedFields = ClientSchema.safeParse(req.body);
+        try {
+            if (id) {
+                const clientId = Array.isArray(id) ? Number(id[0]) : Number(id); // Convert `id` to a number
+                if (isNaN(clientId)) {
+                    return res.status(400).json({ message: "Invalid client ID" });
+                }
+                const result = await sql`SELECT * FROM clients WHERE id = ${clientId}`;
+                if (result.rowCount === 0) {
+                    return res.status(404).json({ message: "Client not found" });
+                }
+                return res.status(200).json(result.rows[0]);
+            } else {
+                const result = await sql`SELECT * FROM clients`;
+                return res.status(200).json(result.rows);
+            }
+        } catch (error) {
+            console.error("Database query error:", error);
+            return res.status(500).json({ error: "Error fetching clients" });
+        }
+    } else if (req.method === "PUT") {
+        const validatedFields = ClientSchema.safeParse(req.body);
 
-    if (!validatedFields.success) {
-        console.error("Validation errors:", validatedFields.error.flatten().fieldErrors);
-        return res.status(400).json({
-            errors: validatedFields.error.flatten().fieldErrors,
-            message: "Validation failed. Please check your inputs.",
-        });
-    }
+        if (!validatedFields.success) {
+            return res.status(400).json({
+                errors: validatedFields.error.flatten().fieldErrors,
+                message: "Validation failed. Please check your inputs.",
+            });
+        }
 
-    const {
-        FirstName,
-        MiddleName,
-        LastName,
-        DOB,
-        RaceEthnicIdentity,
-        ServiceLanguage,
-        CountryOfOrigin,
-        Gender,
-        SexualOrientation,
-        Age,
-        EducationLevel,
-        CountyOfResidence,
-        datetimeStamp,
-        createdBy,
-    } = validatedFields.data;
+        const {
+            FirstName,
+            MiddleName,
+            LastName,
+            DOB,
+            RaceEthnicIdentity,
+            ServiceLanguage,
+            CountryOfOrigin,
+            Gender,
+            SexualOrientation,
+            Age,
+            EducationLevel,
+            CountyOfResidence,
+            datetimeStamp,
+            createdBy,
+        } = validatedFields.data;
 
-    console.log("Validated data:", validatedFields.data);
+        const { id } = req.body; // Assuming the client ID is passed in the body
 
-    try {
-        const result = await sql`
-            INSERT INTO clients (
-                firstname, middlename, lastname, dob, raceethnicidentity, servicelanguage,
-                countryoforigin, gender, sexualorientation, age, educationlevel, countyofresidence, datetimestamp, createdby
-            )
-            VALUES (${FirstName}, ${MiddleName || null}, ${LastName}, ${DOB}, ${RaceEthnicIdentity}, ${ServiceLanguage},
-                ${CountryOfOrigin}, ${Gender}, ${SexualOrientation}, ${Age}, ${EducationLevel}, ${CountyOfResidence}, ${datetimeStamp}, ${createdBy}
-            )
-            RETURNING *;
-        `;
+        if (!id) {
+            return res.status(400).json({ error: "Client ID is required for updating" });
+        }
 
-        console.log("Database insertion result:", result);
+        try {
+            const result = await sql`
+                UPDATE clients
+                SET 
+                    firstname = ${FirstName},
+                    middlename = ${MiddleName || null},
+                    lastname = ${LastName},
+                    dob = ${DOB},
+                    raceethnicidentity = ${RaceEthnicIdentity},
+                    servicelanguage = ${ServiceLanguage},
+                    countryoforigin = ${CountryOfOrigin},
+                    gender = ${Gender},
+                    sexualorientation = ${SexualOrientation},
+                    age = ${Age},
+                    educationlevel = ${EducationLevel},
+                    countyofresidence = ${CountyOfResidence},
+                    datetimestamp = ${datetimeStamp},
+                    createdby = ${createdBy}
+                WHERE id = ${id}
+                RETURNING *;
+            `;
+            if (result.rowCount === 0) {
+                return res.status(404).json({ message: "Client not found" });
+            }
+            return res.status(200).json(result.rows[0]);
+        } catch (error) {
+            console.error("Database query error:", error);
+            return res.status(500).json({ error: "Error updating client" });
+        }
+    } else if (req.method === "DELETE") {
+        const { id } = req.body;
 
-        // Respond with the inserted record
-        return res.status(201).json(result.rows[0]);
-    } catch (err: unknown) {
-        console.error("Error during database operation:", err);
-        return res.status(500).json({ message: "Database insertion failed.", details: err });
+        if (!id) {
+            return res.status(400).json({ error: "Client ID is required for deletion" });
+        }
+
+        try {
+            const result = await sql`DELETE FROM clients WHERE id = ${id} RETURNING *`;
+            if (result.rowCount === 0) {
+                return res.status(404).json({ message: "Client not found" });
+            }
+            return res.status(200).json({ message: "Client deleted successfully", client: result.rows[0] });
+        } catch (error) {
+            console.error("Database query error:", error);
+            return res.status(500).json({ error: "Error deleting client" });
+        }
+    } else {
+        res.status(405).json({ error: "Method not allowed" });
     }
 }
 
@@ -92,10 +172,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 /*
 import { z } from 'zod';
 import { sql } from '@vercel/postgres';
-import { redirect } from 'next/navigation';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-// Define schema for validation
 const ClientSchema = z.object({
     FirstName: z.string().nonempty({ message: "First name is required" }),
     MiddleName: z.string().nullable(),
@@ -113,81 +191,75 @@ const ClientSchema = z.object({
     createdBy: z.string().min(1, "Creator's name is required"),
 });
 
-// Default function export for API route
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
+    if (req.method === 'POST') {
+        const validatedFields = ClientSchema.safeParse(req.body);
+        if (!validatedFields.success) {
+            return res.status(400).json({
+                errors: validatedFields.error.flatten().fieldErrors,
+                message: "Validation failed. Please check your inputs.",
+            });
+        }
 
-    console.log("Attempting to connect to the database...");
-    try {
-        await sql`SELECT 1`; // Quick test query
-        console.log("Database connection established successfully.");
-    } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : "Unknown database error";
-        console.error("Error connecting to the database:", errorMessage);
-        return res.status(500).json({ message: "Database connection failed.", details: errorMessage });
-    }
+        const {
+            FirstName,
+            MiddleName,
+            LastName,
+            DOB,
+            RaceEthnicIdentity,
+            ServiceLanguage,
+            CountryOfOrigin,
+            Gender,
+            SexualOrientation,
+            Age,
+            EducationLevel,
+            CountyOfResidence,
+            datetimeStamp,
+            createdBy,
+        } = validatedFields.data;
 
-    console.log("Received form data:", req.body);
-
-    // Validate and process the form data
-    const validatedFields = ClientSchema.safeParse(req.body);
-
-    if (!validatedFields.success) {
-        console.error("Validation errors:", validatedFields.error.flatten().fieldErrors);
-        return res.status(400).json({
-            errors: validatedFields.error.flatten().fieldErrors,
-            message: "Validation failed. Please check your inputs.",
-        });
-    }
-
-    const {
-        FirstName,
-        MiddleName,
-        LastName,
-        DOB,
-        RaceEthnicIdentity,
-        ServiceLanguage,
-        CountryOfOrigin,
-        Gender,
-        SexualOrientation,
-        Age,
-        EducationLevel,
-        CountyOfResidence,
-        datetimeStamp,
-        createdBy,
-    } = validatedFields.data;
-
-    console.log("Validated data:", validatedFields.data);
-
-    try {
-        const result = await sql`
-            INSERT INTO clients (
-                firstname, middlename, lastname, dob, raceethnicidentity, servicelanguage,
-                countryoforigin, gender, sexualorientation, age, educationlevel, countyofresidence, datetimestamp, createdby
-            )
-            VALUES (${FirstName}, ${MiddleName || null}, ${LastName}, ${DOB}, ${RaceEthnicIdentity || null},
-                    ${ServiceLanguage || null}, ${CountryOfOrigin || null}, ${Gender || null}, 
-                    ${SexualOrientation || null}, ${Age}, ${EducationLevel || null}, 
-                    ${CountyOfResidence || null}, ${datetimeStamp}, ${createdBy})
-            RETURNING *;
-        `;
-
-        console.log("Database insertion result:", result);
-
-        // Instead of revalidating, redirect to the clients dashboard page after successful insert
-        return redirect('/dashboard/clients');
-    } catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : "Unknown database operation error";
-        const errorStack = err instanceof Error ? err.stack : undefined;
-
-        console.error("Error during database operation:", { message: errorMessage, stack: errorStack });
-
-        return res.status(500).json({
-            message: "Database Error: Failed to create client.",
-            details: errorMessage,
-        });
+        try {
+            const result = await sql`
+                INSERT INTO clients (
+                    firstname, middlename, lastname, dob, raceethnicidentity, servicelanguage,
+                    countryoforigin, gender, sexualorientation, age, educationlevel, countyofresidence, datetimestamp, createdby
+                )
+                VALUES (${FirstName}, ${MiddleName || null}, ${LastName}, ${DOB}, ${RaceEthnicIdentity}, ${ServiceLanguage},
+                    ${CountryOfOrigin}, ${Gender}, ${SexualOrientation}, ${Age}, ${EducationLevel}, ${CountyOfResidence}, ${datetimeStamp}, ${createdBy}
+                )
+                RETURNING *;
+            `;
+            return res.status(201).json(result.rows[0]);
+        } catch (err: unknown) {
+            console.error("Error during database operation:", err);
+            return res.status(500).json({ message: "Database insertion failed.", details: err });
+        }
+    } else if (req.method === 'GET') {
+        try {
+            const result = await sql`SELECT * FROM clients`;
+            res.status(200).json(result.rows);
+        } catch (error) {
+            console.error("Database query error:", error);
+            res.status(500).json({ error: "Error fetching clients" });
+        }
+    } else if (req.method === 'PUT') {
+        try {
+            
+        } catch (error) {
+            console.log("Database query error", error);
+            res.status(500).json({ error: "Error updating client" });
+        }
+    } else if (req.method === 'DELETE') {
+        try {
+            const { id } = req.body;
+            const result = await sql`DELETE FROM clients WHERE id = ${id} RETURNING *`;
+            res.status(200).json(result.rows[0]);
+        } catch (error) {
+            console.log("Database query error:", error);
+            res.status(500).json({ error: "Error deleting client"});
+        }
+    } else {
+        res.status(405).json({ error: "Method not allowed" });
     }
 }
 */

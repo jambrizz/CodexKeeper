@@ -1,29 +1,66 @@
 "use client";
 
-import Search from '@/app/ui/search';
-import { lusitana } from '@/app/ui/fonts';
-import { Metadata } from 'next';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-/*
-export const metadata: Metadata = {
-    title: 'Clients',
-};
-*/
+interface Client {
+    firstname: string;
+    lastname: string;
+    dob: string;
+    id: number;
+    [key: string]: any; // Add other fields as needed
+}
 
 const ClientsPage = () => {
+    const [clients, setClients] = useState<Client[]>([]); // Typed state
     const router = useRouter();
 
     const handleAddClientClick = () => {
-        router.push('/dashboard/clients/addClient');
+        router.push("/dashboard/clients/addClient");
     };
 
+    const handleView = (id: number) => {
+        console.log("View client with ID:", id);
+        // Add your logic for viewing the client's details
+    };
+
+    const handleEdit = (id: number) => {
+        console.log("Edit client with ID:", id);
+        // Add your logic for editing the client's details
+    };
+
+    const handleDelete = (id: number) => {
+        console.log("Delete client with ID:", id);
+        // Add your logic for deleting the client
+    };
+
+    const getClientsFromAPI = async (): Promise<Client[]> => {
+        const response = await fetch("/api/Clients");
+        if (!response.ok) {
+            throw new Error("Failed to fetch clients");
+        }
+        return await response.json();
+    };
+
+    const getAllClients = async () => {
+        try {
+            const clientsData = await getClientsFromAPI();
+            console.log("Fetched clients from API", clientsData);
+            setClients(clientsData);
+        } catch (error) {
+            console.error("Error fetching clients", error);
+        }
+    };
+
+    // Fetch clients when the component mounts
+    useEffect(() => {
+        getAllClients();
+    }, []);
 
     return (
         <>
             <div className="flex flex-col items-center">
-                <h1 >Client Portal</h1>
-
+                <h1>Client Portal</h1>
                 <div>
                     <button
                         onClick={handleAddClientClick}
@@ -34,10 +71,57 @@ const ClientsPage = () => {
                 </div>
             </div>
             <div id="searchFeature" className="flex flex-col items-center">
-
+                {/* Add search functionality here */}
             </div>
             <div id="displayClients" className="flex flex-col items-center">
-                
+                {clients.length > 0 ? (
+                    clients.map((client, index) => (
+                        <div
+                            key={client.id}
+                            className="flex flex-row border p-3 m-2 w-[600px] space-x-4 items-center"
+                        >
+                            <div className="flex-grow">
+                                <p>
+                                    <strong>Name:</strong> {client.firstname} {client.middlename} {client.lastname}
+                                </p>
+                                <p>
+                                    <strong>DOB:</strong> {client.dob ? new Date(client.dob).toLocaleDateString("en-US", {
+                                        month: "2-digit",
+                                        day: "2-digit",
+                                        year: "numeric",
+                                    }) : "N/A"}
+                                </p>
+
+                                <p>
+                                    <strong>County</strong> {client.countyofresidence }
+                                </p>
+                            </div>
+                            <div className="flex space-x-2">
+                                <button
+                                    className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                                    onClick={() => handleView(client.id)}
+                                >
+                                    View
+                                </button>
+                                <button
+                                    className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
+                                    onClick={() => handleEdit(client.id)}
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                    onClick={() => handleDelete(client.id)}
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p>No clients found</p>
+                )}
+
             </div>
         </>
     );
