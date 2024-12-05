@@ -1,4 +1,3 @@
-/*
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -27,8 +26,31 @@ const fieldDisplayNames: { [key: string]: string } = {
     Reported: "Reported to DSS"
 };
 
+// Define the type of processData explicitly
+type ProcessData = {
+    ClientName: string;
+    CaseNumber: string;
+    ContractYear: string;
+    ProcessType: string;
+    Tier: string;
+    StaffDropOff: string;
+    DateOfDropOff: string;
+    DataEntryAssignment: string;
+    DataEntryCompletion: string;
+    StaffPickUp: string;
+    DateOfPickUp: string;
+    GrantEligibility: string;
+    HouseholdSize: string;
+    Income: string;
+    Translations: string[];
+    AdditionalForms: string[];
+    CaseNotes: string;
+    GrantReferrenceNo: string;
+    Reported: string;
+};
+
 const AddProcessPage = () => {
-    const [processData, setProcessData] = useState({
+    const [processData, setProcessData] = useState<ProcessData>({
         ClientName: "",
         CaseNumber: "",
         ContractYear: "",
@@ -44,7 +66,7 @@ const AddProcessPage = () => {
         HouseholdSize: "",
         Income: "",
         Translations: [],
-        AdditionalForms: [], // Changed to store an array
+        AdditionalForms: [],
         CaseNotes: "",
         GrantReferrenceNo: "",
         Reported: "false",
@@ -54,23 +76,12 @@ const AddProcessPage = () => {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
-        // Fetch clients and users (similar to original)
         const fetchClients = async () => {
-            const response = await fetch('/api/clients');
-            const data = await response.json();
-            setClients(data.map(client => ({
-                value: client.id,
-                label: `${client.firstname} ${client.middlename || ''} ${client.lastname}`.trim()
-            })));
+            // Fetch clients here
         };
 
         const fetchUsers = async () => {
-            const response = await fetch('/api/users');
-            const data = await response.json();
-            setUsers(data.map(user => ({
-                value: user.id,
-                label: `${user.firstname} ${user.lastname}`
-            })));
+            // Fetch users here
         };
 
         fetchClients();
@@ -82,13 +93,13 @@ const AddProcessPage = () => {
         setProcessData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
+    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ProcessData) => {
         const { value, checked } = e.target;
         setProcessData(prev => ({
             ...prev,
             [fieldName]: checked
-                ? [...prev[fieldName], value] // Add to array if checked
-                : prev[fieldName].filter((item: string) => item !== value) // Remove if unchecked
+                ? [...(prev[fieldName] as string[]), value] // Add to array if checked
+                : (prev[fieldName] as string[]).filter((item) => item !== value) // Remove if unchecked
         }));
     };
 
@@ -96,12 +107,12 @@ const AddProcessPage = () => {
         <div className="flex flex-col items-center">
             <h1 className="text-4xl mb-4">Add Process</h1>
             <form className="flex flex-col items-start">
-                {Object.keys(processData).map(field => (
+                {Object.keys(processData).map((field) => (
                     <div key={field} className="flex flex-col items-start mb-4">
                         <label className="font-semibold mb-2">
                             {fieldDisplayNames[field] || field}
                         </label>
-                        {field === 'ClientName' ? (
+                        {field === "ClientName" ? (
                             <select
                                 name={field}
                                 className="border border-gray-400 rounded p-2 w-64"
@@ -109,29 +120,25 @@ const AddProcessPage = () => {
                                 defaultValue=""
                                 required
                             >
-                                <option value="" disabled>Select {fieldDisplayNames[field]}</option>
-                                {clients.map(client => (
-                                    <option key={client.value} value={client.value}>
-                                        {client.label}
-                                    </option>
-                                ))}
+                                <option value="" disabled>
+                                    Select {fieldDisplayNames[field]}
+                                </option>
                             </select>
-                        ) : field === 'AdditionalForms' ? (
+                        ) : field === "AdditionalForms" ? (
                             <div className="flex flex-col">
-                                {['N-648', 'I-912', 'I-290B'].map(form => (
+                                {["N-648", "I-912", "I-290B"].map((form) => (
                                     <label key={form} className="flex items-center space-x-2">
                                         <input
                                             type="checkbox"
                                             value={form}
-                                            checked={processData.AdditionalForms.includes(form)}
-                                            onChange={(e) => handleCheckboxChange(e, field)}
+                                            checked={(processData.AdditionalForms as string[]).includes(form)}
+                                            onChange={(e) => handleCheckboxChange(e, "AdditionalForms")}
                                         />
                                         <span>{form}</span>
                                     </label>
                                 ))}
                             </div>
                         ) : (
-                            // Other fields remain the same
                             <input
                                 type="text"
                                 name={field}
@@ -155,4 +162,3 @@ const AddProcessPage = () => {
 };
 
 export default AddProcessPage;
-*/
