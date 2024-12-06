@@ -20,19 +20,54 @@ const ClientsPage = () => {
     };
 
     const handleView = (id: number) => {
-        console.log("View client with ID:", id);
-        // Add your logic for viewing the client's details
+        if (!id) {
+            console.error("No client ID available for viewing");
+            return;
+        }
+
+        //console.log("View client with ID:", id);
+        router.push(`/dashboard/clients/viewClient?id=${id}`);
     };
 
     const handleEdit = (id: number) => {
-        console.log("Edit client with ID:", id);
-        // Add your logic for editing the client's details
+        if (!id) {
+            console.error("No client ID available for editing");
+            return;
+        }
+
+        //console.log("Edit client with ID:", id);
+        router.push(`/dashboard/clients/updateClient?id=${id}`);
     };
 
-    const handleDelete = (id: number) => {
-        console.log("Delete client with ID:", id);
-        // Add your logic for deleting the client
+    const handleDelete = async (id: number) => {
+        const confirmed = window.confirm("Are you sure you want to delete this client?");
+        if (!confirmed) {
+            return; // Exit if the user cancels
+        }
+
+        try {
+            const response = await fetch(`/api/Clients`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to delete client: ${response.statusText}`);
+            }
+
+            alert("Client deleted successfully.");
+
+            // Remove the deleted client from the local state
+            setClients((prevClients) => prevClients.filter((client) => client.id !== id));
+        } catch (error) {
+            console.error("Error deleting client:", error);
+            alert("Failed to delete client. Please try again.");
+        }
     };
+
 
     const getClientsFromAPI = async (): Promise<Client[]> => {
         const response = await fetch("/api/Clients");
