@@ -184,7 +184,7 @@ const UpdateClientComponent = () => {
                                 placeholder={fieldDisplayNames[field]}
                                 className="border border-gray-400 rounded p-2 w-64"
                                 onChange={handleInputChange}
-                                value={formData[field as keyof typeof formData]}
+                                value={formData[field as keyof typeof formData] || ""}
                                 required={field !== "MiddleName"}
                             />
                         )}
