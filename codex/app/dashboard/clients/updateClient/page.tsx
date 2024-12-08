@@ -349,9 +349,9 @@ const UpdateClientComponent = () => {
                 </div>
 
                 {/* Hidden Fields */}
-                <input type="hidden" name="id" value={hiddenFields.id} />
-                <input type="hidden" name="datetimeStamp" value={hiddenFields.datetimestamp} />
-                <input type="hidden" name="createdBy" value={hiddenFields.createdby} />
+                <input type="hidden" name="id" value={hiddenFields.id ?? ""} />
+                <input type="hidden" name="datetimeStamp" value={hiddenFields.datetimestamp ?? ""} />
+                <input type="hidden" name="createdBy" value={hiddenFields.createdby ?? ""} />
 
                 <button
                     type="submit"
