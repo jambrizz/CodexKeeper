@@ -50,12 +50,9 @@ const UpdateClientComponent = () => {
         age: "",
         educationlevel: "",
         countyofresidence: "",
-    });
-
-    const [hiddenFields, setHiddenFields] = useState({
-        id: clientId,
-        datetimestamp: "",
-        createdby: "",
+        datetimestamp: datetimeStamp,
+        id: clientId, // Include id in formData directly
+        createdby: createdBy, // Include createdby in formData directly
     });
 
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -74,15 +71,23 @@ const UpdateClientComponent = () => {
                 }
 
                 const clientData = await response.json();
-                const { id, datetimestamp, createdby, ...visibleData } = clientData;
+                const { id, datetimestamp, createdby, dob, ...visibleData } = clientData;
 
                 // Log the id, datetimeStamp, and createdBy
                 console.log("Client ID:", id);
                 console.log("DateTime Stamp:", datetimestamp);
                 console.log("Created By:", createdby);
 
-                setFormData(visibleData);
-                setHiddenFields({ id, datetimestamp, createdby });
+                // Format the dob to 'YYYY-MM-DD' if it exists
+                const formattedDob = dob ? new Date(dob).toISOString().split('T')[0] : '';
+
+                setFormData({
+                    ...visibleData,
+                    id, // Set id
+                    datetimestamp, // Set datetimestamp
+                    createdby, // Set createdby
+                    dob: formattedDob, // Ensure dob is formatted as 'YYYY-MM-DD'
+                });
             } catch (error) {
                 console.error("Error fetching client data:", error);
                 alert("Failed to load client data. Please try again.");
@@ -100,11 +105,13 @@ const UpdateClientComponent = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        console.log("Form data:", formData);
+
         try {
             const normalizedData = {
                 ...formData,
-                ...hiddenFields, // Include hidden fields in the submission
-                middlename: formData.middlename.trim() || null,
+                // Safely handle null or undefined for middlename
+                middlename: formData.middlename ? formData.middlename.trim() : null,
             };
 
             clientSchema.parse(normalizedData);
@@ -143,7 +150,7 @@ const UpdateClientComponent = () => {
                     <label className="font-semibold mb-1">First Name</label>
                     <input
                         type="text"
-                        name="FirstName"
+                        name="firstname"
                         className="border border-gray-400 rounded p-2 w-64"
                         onChange={handleInputChange}
                         value={formData.firstname}
@@ -156,7 +163,7 @@ const UpdateClientComponent = () => {
                     <label className="font-semibold mb-1">Middle Name</label>
                     <input
                         type="text"
-                        name="MiddleName"
+                        name="middlename"
                         className="border border-gray-400 rounded p-2 w-64"
                         onChange={handleInputChange}
                         value={formData.middlename || ""}
@@ -168,7 +175,7 @@ const UpdateClientComponent = () => {
                     <label className="font-semibold mb-1">Last Name</label>
                     <input
                         type="text"
-                        name="LastName"
+                        name="lastname"
                         className="border border-gray-400 rounded p-2 w-64"
                         onChange={handleInputChange}
                         value={formData.lastname}
@@ -181,10 +188,10 @@ const UpdateClientComponent = () => {
                     <label className="font-semibold mb-1">Date of Birth</label>
                     <input
                         type="date"
-                        name="DOB"
+                        name="dob"
                         className="border border-gray-400 rounded p-2 w-64"
                         onChange={handleInputChange}
-                        value={formData.dob ? formData.dob.split("T")[0] : ""}
+                        value={formData.dob || ""}
                         required
                     />
                 </div>
@@ -193,7 +200,7 @@ const UpdateClientComponent = () => {
                 <div className="flex flex-col items-start mb-2">
                     <label className="font-semibold mb-1">Race/Ethnic Identity</label>
                     <select
-                        name="RaceEthnicIdentity"
+                        name="raceethnicidentity"
                         className="border border-gray-400 rounded p-2 w-64"
                         onChange={handleInputChange}
                         value={formData.raceethnicidentity}
@@ -214,7 +221,7 @@ const UpdateClientComponent = () => {
                 <div className="flex flex-col items-start mb-2">
                     <label className="font-semibold mb-1">Service Language</label>
                     <select
-                        name="ServiceLanguage"
+                        name="servicelanguage"
                         className="border border-gray-400 rounded p-2 w-64"
                         onChange={handleInputChange}
                         value={formData.servicelanguage}
@@ -235,7 +242,7 @@ const UpdateClientComponent = () => {
                 <div className="flex flex-col items-start mb-2">
                     <label className="font-semibold mb-1">Country of Origin</label>
                     <select
-                        name="CountryOfOrigin"
+                        name="countryoforigin"
                         className="border border-gray-400 rounded p-2 w-64"
                         onChange={handleInputChange}
                         value={formData.countryoforigin}
@@ -256,7 +263,7 @@ const UpdateClientComponent = () => {
                 <div className="flex flex-col items-start mb-2">
                     <label className="font-semibold mb-1">Gender</label>
                     <select
-                        name="Gender"
+                        name="gender"
                         className="border border-gray-400 rounded p-2 w-64"
                         onChange={handleInputChange}
                         value={formData.gender}
@@ -277,7 +284,7 @@ const UpdateClientComponent = () => {
                 <div className="flex flex-col items-start mb-2">
                     <label className="font-semibold mb-1">Sexual Orientation</label>
                     <select
-                        name="SexualOrientation"
+                        name="sexualorientation"
                         className="border border-gray-400 rounded p-2 w-64"
                         onChange={handleInputChange}
                         value={formData.sexualorientation}
@@ -298,7 +305,7 @@ const UpdateClientComponent = () => {
                 <div className="flex flex-col items-start mb-2">
                     <label className="font-semibold mb-1">Age</label>
                     <input
-                        name="Age"
+                        name="age"
                         className="border border-gray-400 rounded p-2 w-64"
                         onChange={handleInputChange}
                         value={formData.age}
@@ -310,7 +317,7 @@ const UpdateClientComponent = () => {
                 <div className="flex flex-col items-start mb-2">
                     <label className="font-semibold mb-1">Education Level</label>
                     <select
-                        name="EducationLevel"
+                        name="educationlevel"
                         className="border border-gray-400 rounded p-2 w-64"
                         onChange={handleInputChange}
                         value={formData.educationlevel}
@@ -331,7 +338,7 @@ const UpdateClientComponent = () => {
                 <div className="flex flex-col items-start mb-2">
                     <label className="font-semibold mb-1">County of Residence</label>
                     <select
-                        name="CountyOfResidence"
+                        name="countyofresidence"
                         className="border border-gray-400 rounded p-2 w-64"
                         onChange={handleInputChange}
                         value={formData.countyofresidence}
@@ -349,9 +356,9 @@ const UpdateClientComponent = () => {
                 </div>
 
                 {/* Hidden Fields */}
-                <input type="hidden" name="id" value={hiddenFields.id ?? ""} />
-                <input type="hidden" name="datetimeStamp" value={hiddenFields.datetimestamp ?? ""} />
-                <input type="hidden" name="createdBy" value={hiddenFields.createdby ?? ""} />
+                <input type="hidden" name="id" value={formData.id ?? ""} />
+                <input type="hidden" name="datetimestamp" value={formData.datetimestamp ?? ""} />
+                <input type="hidden" name="createdby" value={formData.createdby ?? ""} />
 
                 <button
                     type="submit"

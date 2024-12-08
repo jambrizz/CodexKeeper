@@ -16,36 +16,36 @@ import { z } from "zod";
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
 
 const fieldDisplayNames: { [key: string]: string } = {
-    FirstName: "First Name",
-    MiddleName: "Middle Name",
-    LastName: "Last Name",
-    DOB: "Date of Birth",
-    RaceEthnicIdentity: "Race/Ethnic Identity",
-    ServiceLanguage: "Service Language",
-    CountryOfOrigin: "Country of Origin",
-    Gender: "Gender",
-    SexualOrientation: "Sexual Orientation",
-    Age: "Age",
-    EducationLevel: "Education Level",
-    CountyOfResidence: "County of Residence",
+    firstname: "First Name",
+    middlename: "Middle Name",
+    lastname: "Last Name",
+    dob: "Date of Birth",
+    raceethnicidentity: "Race/Ethnic Identity",
+    servicelanguage: "Service Language",
+    countryoforigin: "Country of Origin",
+    gender: "Gender",
+    sexualorientation: "Sexual Orientation",
+    age: "Age",
+    educationlevel: "Education Level",
+    countyofresidence: "County of Residence",
 };
 
 const AddClient = () => {
     const [formData, setFormData] = useState({
-        FirstName: "",
-        MiddleName: "",
-        LastName: "",
-        DOB: "",
-        RaceEthnicIdentity: "",
-        ServiceLanguage: "",
-        CountryOfOrigin: "",
-        Gender: "",
-        SexualOrientation: "",
-        Age: "",
-        EducationLevel: "",
-        CountyOfResidence: "",
-        datetimeStamp: new Date().toISOString(),
-        createdBy: "Jovani Ambriz",
+        firstname: "",
+        middlename: "",
+        lastname: "",
+        dob: "",
+        raceethnicidentity: "",
+        servicelanguage: "",
+        countryoforigin: "",
+        gender: "",
+        sexualorientation: "",
+        age: "",
+        educationlevel: "",
+        countyofresidence: "",
+        datetimestamp: new Date().toISOString(),
+        createdby: "Jovani Ambriz",
     });
 
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -63,7 +63,7 @@ const AddClient = () => {
         try {
             const normalizedData = {
                 ...formData,
-                MiddleName: formData.MiddleName.trim() || null,
+                middlename: formData.middlename.trim() || null,
             };
 
             clientSchema.parse(normalizedData);
@@ -111,38 +111,38 @@ const AddClient = () => {
             <h1 className="text-4xl mb-4">Add Client</h1>
             <form onSubmit={handleSubmit} className="flex flex-col items-center">
                 {Object.keys(formData).map((field) =>
-                    field !== "datetimeStamp" && field !== "createdBy" ? (
+                    field !== "datetimestamp" && field !== "createdby" ? (
                         <div key={field} className="flex flex-col items-start mb-2">
                             <label className="font-semibold mb-1">
                                 {fieldDisplayNames[field] || field}
                             </label>
                             {[
-                                "RaceEthnicIdentity",
-                                "ServiceLanguage",
-                                "CountryOfOrigin",
-                                "Gender",
-                                "SexualOrientation",
-                                "Age",
-                                "EducationLevel",
-                                "CountyOfResidence",
+                                "raceethnicidentity",
+                                "servicelanguage",
+                                "countryoforigin",
+                                "gender",
+                                "sexualorientation",
+                                "age",
+                                "educationlevel",
+                                "countyofresidence",
                             ].includes(field) ? (
                                 <select
                                     name={field}
                                     className="border border-gray-400 rounded p-2 w-64"
                                     onChange={handleInputChange}
                                     value={formData[field as keyof typeof formData]}
-                                    required={field !== "MiddleName"}
+                                    required={field !== "middlename"}
                                 >
                                     <option value="" disabled>
                                         Select {fieldDisplayNames[field]}
                                     </option>
-                                    {(field === "RaceEthnicIdentity" ? racialEthnicIdentity :
-                                        field === "ServiceLanguage" ? serviceLanguages :
-                                            field === "CountryOfOrigin" ? countryOfOrigin :
-                                                field === "Gender" ? gender :
-                                                    field === "SexualOrientation" ? sexualOrientation :
-                                                        field === "Age" ? age :
-                                                            field === "EducationLevel" ? educationLevel :
+                                    {(field === "raceethnicidentity" ? racialEthnicIdentity :
+                                        field === "servicelanguage" ? serviceLanguages :
+                                            field === "countryoforigin" ? countryOfOrigin :
+                                                field === "gender" ? gender :
+                                                    field === "sexualorientation" ? sexualOrientation :
+                                                        field === "age" ? age :
+                                                            field === "educationlevel" ? educationLevel :
                                                                 countyOfResidence
                                     ).map((option) => (
                                         <option key={option} value={option}>
@@ -152,13 +152,13 @@ const AddClient = () => {
                                 </select>
                             ) : (
                                 <input
-                                    type={field === "DOB" ? "date" : "text"}
+                                    type={field === "dob" ? "date" : "text"}
                                     name={field}
                                     placeholder={fieldDisplayNames[field]}
                                     className="border border-gray-400 rounded p-2 w-64"
                                     onChange={handleInputChange}
                                     value={formData[field as keyof typeof formData]}
-                                    required={field !== "MiddleName"}
+                                    required={field !== "middlename"}
                                 />
                             )}
                         </div>

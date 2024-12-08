@@ -3,20 +3,20 @@ import { sql } from "@vercel/postgres";
 import { NextApiRequest, NextApiResponse } from "next";
 
 const ClientSchema = z.object({
-    FirstName: z.string().nonempty({ message: "First name is required" }),
-    MiddleName: z.string().nullable(),
-    LastName: z.string().nonempty({ message: "Last name is required" }),
-    DOB: z.string().nonempty({ message: "Date of birth is required" }),
-    RaceEthnicIdentity: z.string().min(1, "Race/Ethnic Identity is required"),
-    ServiceLanguage: z.string().min(1, "Service Language is required"),
-    CountryOfOrigin: z.string().min(1, "Country of Origin is required"),
-    Gender: z.string().min(1, "Gender is required"),
-    SexualOrientation: z.string().min(1, "Sexual Orientation is required"),
-    Age: z.string().min(1, "Age is required"),
-    EducationLevel: z.string().min(1, "Education Level is required"),
-    CountyOfResidence: z.string().min(1, "County of Residence is required"),
-    datetimeStamp: z.string().refine((val) => !isNaN(Date.parse(val)), "Invalid datetime format"),
-    createdBy: z.string().min(1, "Creator's name is required"),
+    firstname: z.string().nonempty({ message: "First name is required" }),
+    middlename: z.string().nullable(),
+    lastname: z.string().nonempty({ message: "Last name is required" }),
+    dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date of Birth needs to be formatted as YYYY-MM-DD"),
+    raceethnicidentity: z.string().min(1, "Race/Ethnic Identity is required"),
+    servicelanguage: z.string().min(1, "Service Language is required"),
+    countryoforigin: z.string().min(1, "Country of Origin is required"),
+    gender: z.string().min(1, "Gender is required"),
+    sexualorientation: z.string().min(1, "Sexual Orientation is required"),
+    age: z.string().min(1, "Age is required"),
+    educationlevel: z.string().min(1, "Education Level is required"),
+    countyofresidence: z.string().min(1, "County of Residence is required"),
+    datetimestamp: z.string().refine((val) => !isNaN(Date.parse(val)), "Invalid datetime format"),
+    createdby: z.string().min(1, "Creator's name is required"),
 });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -30,20 +30,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         const {
-            FirstName,
-            MiddleName,
-            LastName,
-            DOB,
-            RaceEthnicIdentity,
-            ServiceLanguage,
-            CountryOfOrigin,
-            Gender,
-            SexualOrientation,
-            Age,
-            EducationLevel,
-            CountyOfResidence,
-            datetimeStamp,
-            createdBy,
+            firstname,
+            middlename,
+            lastname,
+            dob,
+            raceethnicidentity,
+            servicelanguage,
+            countryoforigin,
+            gender,
+            sexualorientation,
+            age,
+            educationlevel,
+            countyofresidence,
+            datetimestamp,
+            createdby,
         } = validatedFields.data;
 
         try {
@@ -52,8 +52,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     firstname, middlename, lastname, dob, raceethnicidentity, servicelanguage,
                     countryoforigin, gender, sexualorientation, age, educationlevel, countyofresidence, datetimestamp, createdby
                 )
-                VALUES (${FirstName}, ${MiddleName || null}, ${LastName}, ${DOB}, ${RaceEthnicIdentity}, ${ServiceLanguage},
-                    ${CountryOfOrigin}, ${Gender}, ${SexualOrientation}, ${Age}, ${EducationLevel}, ${CountyOfResidence}, ${datetimeStamp}, ${createdBy}
+                VALUES (${firstname}, ${middlename || null}, ${lastname}, ${dob}, ${raceethnicidentity}, ${servicelanguage},
+                    ${countryoforigin}, ${gender}, ${sexualorientation}, ${age}, ${educationlevel}, ${countyofresidence}, ${datetimestamp}, ${createdby}
                 )
                 RETURNING *;
             `;
@@ -95,20 +95,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         const {
-            FirstName,
-            MiddleName,
-            LastName,
-            DOB,
-            RaceEthnicIdentity,
-            ServiceLanguage,
-            CountryOfOrigin,
-            Gender,
-            SexualOrientation,
-            Age,
-            EducationLevel,
-            CountyOfResidence,
-            datetimeStamp,
-            createdBy,
+            firstname,
+            middlename,
+            lastname,
+            dob,
+            raceethnicidentity,
+            servicelanguage,
+            countryoforigin,
+            gender,
+            sexualorientation,
+            age,
+            educationlevel,
+            countyofresidence,
+            datetimestamp,
+            createdby,
         } = validatedFields.data;
 
         const { id } = req.body; 
@@ -121,20 +121,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const result = await sql`
                 UPDATE clients
                 SET 
-                    firstname = ${FirstName},
-                    middlename = ${MiddleName || null},
-                    lastname = ${LastName},
-                    dob = ${DOB},
-                    raceethnicidentity = ${RaceEthnicIdentity},
-                    servicelanguage = ${ServiceLanguage},
-                    countryoforigin = ${CountryOfOrigin},
-                    gender = ${Gender},
-                    sexualorientation = ${SexualOrientation},
-                    age = ${Age},
-                    educationlevel = ${EducationLevel},
-                    countyofresidence = ${CountyOfResidence},
-                    datetimestamp = ${datetimeStamp},
-                    createdby = ${createdBy}
+                    firstname = ${firstname},
+                    middlename = ${middlename || null},
+                    lastname = ${lastname},
+                    dob = ${dob},
+                    raceethnicidentity = ${raceethnicidentity},
+                    servicelanguage = ${servicelanguage},
+                    countryoforigin = ${countryoforigin},
+                    gender = ${gender},
+                    sexualorientation = ${sexualorientation},
+                    age = ${age},
+                    educationlevel = ${educationlevel},
+                    countyofresidence = ${countyofresidence},
+                    datetimestamp = ${datetimestamp},
+                    createdby = ${createdby}
                 WHERE id = ${id}
                 RETURNING *;
             `;
