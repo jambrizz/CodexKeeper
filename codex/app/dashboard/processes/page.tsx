@@ -40,6 +40,9 @@ const ProcessesPage = () => {
                         Add Process
                     </button>
                 </div>
+                <div id="Processes" className="flex flex-col items-center">
+
+                </div>
             </div>
         </>
     );

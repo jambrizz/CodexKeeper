@@ -1,5 +1,108 @@
 "use client";
 
+import React, { useState } from "react";
+import { processSchema } from "@/app/model/processValidation";
+import { z } from "zod";
+import { useRouter } from "next/router";
+
+const fieldDisplayNames: { [key: string]: string } = {
+    clientid: "Client",
+    clientcasenumber: "Client Cerenade Number",
+    contractyear: "Contract Year",
+    processtype: "Process Type",
+    staffdropoff: "Staff who picked up Client's Process",
+    dateofdropoff: "Date client Dropped Off Process",
+    dataentryassignment: "Staff Assigned for Data Entry",
+    dataentrycompletion: "Data Entry Completed On",
+    staffpickup: "Staff who turned in Client's Process",
+    dateofpickup: "Date client signed for Process",
+    granteligibility: "Grant Eligibility",
+    householdsize: "Household Size",
+    income: "Client Income",
+    translations: "Translations Completed",
+    additionalforms: "Additional Forms",
+    casenotes: "Case Notes",
+    grantreferenceno: "Grant Reference Number",
+    reported: "Reported to DSS",
+};
+
+const AddProcess = () => {
+    const [formData, setFormData] = useState({
+        clientid: "",
+        clientcasenumber: "",
+        contractyear: "",
+        processtype: "",
+        tier: "",
+        staffdropoff: "",
+        dateofdropoff: "",
+        dataentryassignment: "",
+        dataentrycompletion: "",
+        staffpickup: "",
+        dateofpickup: "",
+        granteligibility: "",
+        householdsize: "",
+        income: "",
+        translations: "",
+        additionalforms: "",
+        casenotes: "",
+        grantreferenceno: "",
+        reported: "",
+        datetimestamp: new Date().toISOString(),
+        createdby: "Jovani Ambriz",
+    });
+
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [countdown, setCountdown] = useState<number | null>(null);
+    const router = useRouter();
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const setTier = (processtype: string): void => {
+            const process = formData.processtype;
+
+            if (process === "Legal Consultation" || process === "App. For Perm. Res. Card" ||
+                process === "RFE" || process === "NOID" || process === "Initial Application" ||
+                process === "Renewal Application") {
+                formData.tier = "Tier 1";
+            } else if (process === "Naturalization Certificate" || process === "Citizenship Certificate" ||
+                process === "FOIA Request" || process === "Criminal Record Reeview" || process === "Refugee Relative" ||
+                "Asylee Relative") {
+                formData.tier = "Tier 2";
+            } else if (process === "Application for Certificate of Naturalization" ||
+                process === "Legal Rep. at USCIS Interview") {
+                formData.tier = "Tier 3";
+            } else if (process === "DACA" || process === "Naturalization" || process === "Removal of Conditions" ||
+                process === "Advance Parole" || process === "Parole in Place" || process === "Humanitarian Parole" ||
+                process === "TPS w/ EAD" || process === "Petition by US Citizen" || process === "Petition by LPR in CA") {
+                formData.tier = "Tier 4";
+            } else if (process === "DACA w/ Criminal History" || process === "DACA w/ appeal(s)" ||
+                process === "Natz w/ Criminal History" || process === "Natz w/ Appeal(s)" ||
+                process === "Natz w/ Medical Waiver") {
+                formData.tier = "Tier 5";
+            } else {
+                formData.tier = "Tier 6";
+            }
+        };
+
+        try {
+
+        } catch (error) {
+
+        }
+
+    };
+
+};
+
+/*
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { processes } from '@/app/demo/processes';
 import { tiers } from '@/app/demo/tiers';
@@ -162,3 +265,4 @@ const AddProcessPage = () => {
 };
 
 export default AddProcessPage;
+*/
