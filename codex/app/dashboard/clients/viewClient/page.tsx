@@ -111,6 +111,9 @@ const ClientDetails = () => {
                     {new Date(client.datetimestamp).toLocaleString("en-US")}
                 </p>
             </div>
+            <div id="DisplayClientProcesses" className="flex flex-col items-center">
+
+            </div>
         </div>
     );
 };
