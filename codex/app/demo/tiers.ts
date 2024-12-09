@@ -24,3 +24,9 @@ export const supportServices: Array<string> = [
 export const supportServiceAmounts: Array<number> = [
     50.00
 ];
+
+export const additionalForms: Array<string> = [
+    "I-912",
+    "N-648",
+    "I-290B"
+];
