@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { processSchema } from "@/app/model/processValidation";
 import { z } from "zod";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const fieldDisplayNames: { [key: string]: string } = {
     clientid: "Client",
@@ -26,7 +26,7 @@ const fieldDisplayNames: { [key: string]: string } = {
     reported: "Reported to DSS",
 };
 
-const AddProcess = () => {
+const AddProcess: React.FC = () => {
     const [formData, setFormData] = useState({
         clientid: "",
         clientcasenumber: "",
@@ -60,52 +60,99 @@ const AddProcess = () => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const setTier = (processtype: string): void => {
+        const process = formData.processtype;
+
+        if (
+            process === "Legal Consultation" ||
+            process === "App. For Perm. Res. Card" ||
+            process === "RFE" ||
+            process === "NOID" ||
+            process === "Initial Application" ||
+            process === "Renewal Application"
+        ) {
+            formData.tier = "Tier 1";
+        } else if (
+            process === "Naturalization Certificate" ||
+            process === "Citizenship Certificate" ||
+            process === "FOIA Request" ||
+            process === "Criminal Record Reeview" ||
+            process === "Refugee Relative" ||
+            process === "Asylee Relative"
+        ) {
+            formData.tier = "Tier 2";
+        } else if (
+            process === "Application for Certificate of Naturalization" ||
+            process === "Legal Rep. at USCIS Interview"
+        ) {
+            formData.tier = "Tier 3";
+        } else if (
+            process === "DACA" ||
+            process === "Naturalization" ||
+            process === "Removal of Conditions" ||
+            process === "Advance Parole" ||
+            process === "Parole in Place" ||
+            process === "Humanitarian Parole" ||
+            process === "TPS w/ EAD" ||
+            process === "Petition by US Citizen" ||
+            process === "Petition by LPR in CA"
+        ) {
+            formData.tier = "Tier 4";
+        } else if (
+            process === "DACA w/ Criminal History" ||
+            process === "DACA w/ appeal(s)" ||
+            process === "Natz w/ Criminal History" ||
+            process === "Natz w/ Appeal(s)" ||
+            process === "Natz w/ Medical Waiver"
+        ) {
+            formData.tier = "Tier 5";
+        } else {
+            formData.tier = "Tier 6";
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const setTier = (processtype: string): void => {
-            const process = formData.processtype;
-
-            if (process === "Legal Consultation" || process === "App. For Perm. Res. Card" ||
-                process === "RFE" || process === "NOID" || process === "Initial Application" ||
-                process === "Renewal Application") {
-                formData.tier = "Tier 1";
-            } else if (process === "Naturalization Certificate" || process === "Citizenship Certificate" ||
-                process === "FOIA Request" || process === "Criminal Record Reeview" || process === "Refugee Relative" ||
-                "Asylee Relative") {
-                formData.tier = "Tier 2";
-            } else if (process === "Application for Certificate of Naturalization" ||
-                process === "Legal Rep. at USCIS Interview") {
-                formData.tier = "Tier 3";
-            } else if (process === "DACA" || process === "Naturalization" || process === "Removal of Conditions" ||
-                process === "Advance Parole" || process === "Parole in Place" || process === "Humanitarian Parole" ||
-                process === "TPS w/ EAD" || process === "Petition by US Citizen" || process === "Petition by LPR in CA") {
-                formData.tier = "Tier 4";
-            } else if (process === "DACA w/ Criminal History" || process === "DACA w/ appeal(s)" ||
-                process === "Natz w/ Criminal History" || process === "Natz w/ Appeal(s)" ||
-                process === "Natz w/ Medical Waiver") {
-                formData.tier = "Tier 5";
-            } else {
-                formData.tier = "Tier 6";
-            }
-        };
+        setTier(formData.processtype); // Ensure the tier is set before submission.
 
         try {
+            const parsedData = processSchema.parse(formData); // Validate with Zod.
+            const response = await fetch("/api/processes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(parsedData),
+            });
 
+            if (!response.ok) {
+                throw new Error(`Failed to submit process: ${response.statusText}`);
+            }
+
+            setSuccessMessage("Process added successfully!");
+            setTimeout(() => router.push("/dashboard/processes"), 2000);
         } catch (error) {
-
+            if (error instanceof z.ZodError) {
+                console.error("Validation Error:", error.errors);
+                alert("Validation failed. Please review your inputs.");
+            } else {
+                console.error("Submission Error:", error);
+                alert("An error occurred during submission.");
+            }
         }
-
     };
 
     return (
         <>
+            <form onSubmit={handleSubmit}>
+                {/* Add form inputs */}
+            </form>
+            {successMessage && <p>{successMessage}</p>}
         </>
     );
-
 };
 
 export default AddProcess;
+
 
 /*
 "use client";
