@@ -100,6 +100,8 @@ const AddProcess = () => {
 
 };
 
+export default AddProcess;
+
 /*
 "use client";
 
