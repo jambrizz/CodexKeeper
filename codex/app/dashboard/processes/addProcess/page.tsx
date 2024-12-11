@@ -75,7 +75,8 @@ const AddProcess: React.FC = () => {
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+        e.preventDefault();    
+
 
         const setTier = (processtype: string): void => {
             const process = formData.processtype;
@@ -175,6 +176,8 @@ const AddProcess: React.FC = () => {
     };
 
 
+
+
     const getClientsFromAPI = async (): Promise<Client[]> => {
         const response = await fetch("/api/Clients");
         if (!response.ok) {
@@ -197,6 +200,23 @@ const AddProcess: React.FC = () => {
         getAllClients();
     }, []);
 
+    const onInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value } = event.target;
+
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]:
+                name === "clientid" ? Number(value) : // Convert to number if 'clientid'
+                name === "income" ? parseFloat(value) || 0 : // Convert to float if 'income'
+                name === "householdsize" ? Number(value) : // Convert to number if 'householdsize'
+                name === "translations" ? Number(value) : // Convert to number if 'translations'
+                value, // Default to string for other fields
+        }));
+    };
+
+
+
+
     return (
         <div className="flex flex-col items-center">
             <h1 className="text-4xl mb-4">Add Process</h1>
@@ -208,14 +228,14 @@ const AddProcess: React.FC = () => {
                         <select
                             name="clientid"
                             className="border border-gray-400 rounded p-2 w-64"
-                            onChange={handleInputChange}
-                            value={formData.clientid}
+                            onChange={onInputChange} // Use the renamed function
+                            value={formData.clientid} // Ensure this matches the correct value type
                             required
                         >
                             <option value="" disabled>Select Client</option>
                             {clients.map((client) => (
                                 <option key={client.id} value={client.id}>
-                                   {client.firstname} {client.middlename || ""} {client.lastname} {new Date(client.dob).toLocaleDateString("en-US")}
+                                    {client.firstname} {client.middlename || ""} {client.lastname} {new Date(client.dob).toLocaleDateString("en-US")}
                                 </option>
                             ))}
                         </select>
@@ -386,8 +406,8 @@ const AddProcess: React.FC = () => {
                     <select
                         name="householdsize"
                         className="border border-gray-400 rounded p-2 w-64"
-                        onChange={handleInputChange}
-                        value={Number(formData.householdsize)}
+                        onChange={onInputChange} // use onInputChange to handle the event
+                        value={Number(formData.householdsize)} // Ensure value is treated as a number
                     >
                         <option value="">Select Household Size</option>
                         {[...Array(10).keys()].map((num) => (
@@ -398,6 +418,7 @@ const AddProcess: React.FC = () => {
                     </select>
                 </div>
 
+
                 { /* income */}
                 <div className="flex flex-col items-start mb-2">
                     <label className="font-semibold mb-1">Client Income</label>
@@ -405,8 +426,8 @@ const AddProcess: React.FC = () => {
                         type="number"
                         name="income"
                         className="border border-gray-400 rounded p-2 w-64"
-                        onChange={handleInputChange}
-                        value={formData.income}
+                        onChange={onInputChange} // use onInputChange to handle the event
+                        value={formData.income} // Display the value from formData
                     />
                 </div>
 
@@ -417,9 +438,11 @@ const AddProcess: React.FC = () => {
                         type="number"
                         name="translations"
                         className="border border-gray-400 rounded p-2 w-64"
-                        onChange={handleInputChange}
+                        onChange={onInputChange} // use onInputChange to handle the event
+                        value={formData.translations} // Display the value from formData
                     />
                 </div>
+
 
                 { /* additional forms */}
                 <div className="flex flex-col items-start mb-2">
