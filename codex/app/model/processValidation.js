@@ -11,17 +11,21 @@ export const processSchema = z.object({
 	dataentryassignment: z.string().nullable().optional(),
 	dataentrycompletion: z
 		.string()
-		.refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date time format" })
+		.transform(val => val === '' ? null : val)
+		.refine(val => val === null || !isNaN(Date.parse(val)), { message: "Invalid date time format" })
+		.nullable()
 		.optional(),
 	staffpickup: z.string().nullable().optional(),
 	dateofpickup: z
 		.string()
-		.refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date time format" })
+		.transform(val => val === '' ? null : val)
+		.refine(val => val === null || !isNaN(Date.parse(val)), { message: "Invalid date time format" })
+		.nullable()
 		.optional(),
 	granteligibility: z.string().min(1, "Grant Eligibility is required"),
-	householdsize: z.number().optional(),
-	income: z.number().nonnegative().optional(),
-	translations: z.number().nonnegative().optional(),
+	householdsize: z.number().min(1, "Household size needs to be at least 1"),
+	income: z.number().min(0, "Income needs to at least be 0"),
+	translations: z.number().min(0, "Translations need to be at least 0, please double check how many translations you did"),
 	additionalforms: z.string().nullable().optional(),
 	casenotes: z.string().nullable().optional(),
 	grantreferenceno: z.string().nullable().optional(),

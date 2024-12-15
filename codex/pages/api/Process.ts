@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     clientid, clientcasenumber, contractyear, processtype, tier, staffdropoff,
                     dateofdropoff, dataentryassignment, dataentrycompletion, staffpickup, dateofpickup,
                     granteligibility, householdsize, income, translations, additionalforms, casenotes,
-                    grantreferenceno, reported, datetimestamp, createdby,
+                    grantreferenceno, reported, datetimestamp, createdby
                 )
                 VALUES (${clientid}, ${clientcasenumber}, ${contractyear}, ${processtype}, ${tier}, ${staffdropoff},
                     ${dateofdropoff}, ${dataentryassignment}, ${dataentrycompletion}, ${staffpickup}, ${dateofpickup},
@@ -59,7 +59,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
     } else if (req.method === "GET") {
+        const { id } = req.query;
 
+        try {
+            if (id) {
+                const processId = Array.isArray(id) ? Number(id[0]) : Number(id); // Convert `id` to a number
+                if (isNaN(processId)) {
+                    return res.status(400).json({ message: "Invalid process ID" });
+                }
+                const result = await sql`SELECT * FROM process WHERE id = ${processId}`;
+                if (result.rowCount === 0) {
+                    return res.status(404).json({ message: "Process not found" });
+                }
+                return res.status(200).json(result.rows[0]);
+            } else if (req.method === "GET") {
+                try {
+                    const result = await sql`
+                        SELECT p.*, c.firstname, c.middlename, c.lastname, c.dob
+                        FROM process p
+                        JOIN clients c ON p.clientid = c.id;
+                    `;
+                    return res.status(200).json(result.rows);
+                } catch (error) {
+                    console.error("Database query error:", error);
+                    return res.status(500).json({ error: "Error fetching process" });
+                }
+            } else {
+                const result = await sql`SELECT * FROM process`;
+                return res.status(200).json(result.rows);
+            }
+        } catch (error) {
+            console.error("Database query error:", error);
+            return res.status(500).json({ error: "Error fetching process" });
+        }
     } else if (req.method === "PUT") {
 
     } else if (req.method === "DELETE") {
