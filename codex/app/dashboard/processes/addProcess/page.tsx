@@ -69,6 +69,11 @@ const AddProcess: React.FC = () => {
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const router = useRouter();
 
+    const handleBackClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        router.push("/dashboard/processes");
+    };
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -164,13 +169,6 @@ const AddProcess: React.FC = () => {
             } else {
                 alert("An error occurred during submission.");
             }
-            /*
-            if (error instanceof z.ZodError) {
-                alert("Validation failed. Please review your inputs. This error is from the page");
-            } else {
-                alert("An error occurred during submission.");
-            }
-            */
         }
         
     };
@@ -505,15 +503,20 @@ const AddProcess: React.FC = () => {
                         <option value="true">true</option>
                     </select>
                 </div>
-
-
-
-                <button
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-                >
-                    Submit
-                </button>
+                <div className="flex flex-row m-3 gap-4">
+                    <button
+                        type="submit"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                    >
+                        Submit
+                    </button>
+                    <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+                        onClick={handleBackClick}
+                    >
+                        Back to Processes
+                    </button>
+                </div>
             </form>
             {successMessage && (
                 <div className="mt-4 text-center">
@@ -525,240 +528,3 @@ const AddProcess: React.FC = () => {
 };
 
 export default AddProcess;
-
-
-/*
-"use client";
-
-import React, { useState } from "react";
-import { processSchema } from "@/app/model/processValidation";
-import { z } from "zod";
-import { useRouter } from "next/navigation";
-import { processes } from "@/app/demo/processes";
-import { users } from "@/app/demo/users";
-import { eligibility } from "@/app/demo/eligibility";
-import { additionalForms } from "@/app/demo/tiers";
-
-const fieldDisplayNames: { [key: string]: string } = {
-    clientid: "Client",
-    clientcasenumber: "Client Cerenade Number",
-    contractyear: "Contract Year",
-    processtype: "Process Type",
-    staffdropoff: "Staff who picked up Client's Process",
-    dateofdropoff: "Date client Dropped Off Process",
-    dataentryassignment: "Staff Assigned for Data Entry",
-    dataentrycompletion: "Data Entry Completed On",
-    staffpickup: "Staff who turned in Client's Process",
-    dateofpickup: "Date client signed for Process",
-    granteligibility: "Grant Eligibility",
-    householdsize: "Household Size",
-    income: "Client Income",
-    translations: "Translations Completed",
-    additionalforms: "Additional Forms",
-    casenotes: "Case Notes",
-    grantreferenceno: "Grant Reference Number",
-    reported: "Reported to DSS",
-};
-
-const AddProcess: React.FC = () => {
-    const [formData, setFormData] = useState({
-        clientid: "",
-        clientcasenumber: "",
-        contractyear: "",
-        processtype: "",
-        tier: "",
-        staffdropoff: "",
-        dateofdropoff: "",
-        dataentryassignment: "",
-        dataentrycompletion: "",
-        staffpickup: "",
-        dateofpickup: "",
-        granteligibility: "",
-        householdsize: "",
-        income: "",
-        translations: "",
-        additionalforms: "",
-        casenotes: "",
-        grantreferenceno: "",
-        reported: "",
-        datetimestamp: new Date().toISOString(),
-        createdby: "Jovani Ambriz",
-    });
-
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
-    const router = useRouter();
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        try {
-            const parsedData = processSchema.parse(formData);
-            const response = await fetch("/api/processes", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(parsedData),
-            });
-            if (!response.ok) {
-                throw new Error(`Failed to submit process: ${response.statusText}`);
-            }
-            setSuccessMessage("Process added successfully!");
-            setTimeout(() => router.push("/dashboard/processes"), 2000);
-        } catch (error) {
-            if (error instanceof z.ZodError) {
-                alert("Validation failed. Please review your inputs.");
-            } else {
-                alert("An error occurred during submission.");
-            }
-        }
-    };
-
-    return (
-        <div className="flex flex-col items-center">
-            <h1 className="text-4xl mb-4">Add Process</h1>
-            <form onSubmit={handleSubmit} className="flex flex-col items-center">
-                {Object.keys(formData).map((field) =>
-                    field !== "datetimestamp" && field !== "createdby" ? (
-                        <div key={field} className="flex flex-col items-start mb-2">
-                            <label className="font-semibold mb-1">
-                                {fieldDisplayNames[field] || field}
-                            </label>
-                            {field === "processtype" ? (
-                                <select
-                                    name={field}
-                                    className="border border-gray-400 rounded p-2 w-64"
-                                    onChange={handleInputChange}
-                                    value={formData[field as keyof typeof formData]}
-                                    required
-                                >
-                                    <option value="" disabled>
-                                        Select {fieldDisplayNames[field]}
-                                    </option>
-                                    {processes.map((process) => (
-                                        <option key={process} value={process}>
-                                            {process}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : ["staffdropoff", "dataentryassignment", "staffpickup"].includes(field) ? (
-                                <select
-                                    name={field}
-                                    className="border border-gray-400 rounded p-2 w-64"
-                                    onChange={handleInputChange}
-                                    value={formData[field as keyof typeof formData]}
-                                    required
-                                >
-                                    <option value="" disabled>
-                                        Select {fieldDisplayNames[field]}
-                                    </option>
-                                    {users.map((user) => (
-                                        <option key={user} value={user}>
-                                            {user}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : ["dateofdropoff", "dataentrycompletion", "dateofpickup"].includes(field) ? (
-                                <input
-                                    type="date"
-                                    name={field}
-                                    className="border border-gray-400 rounded p-2 w-64"
-                                    onChange={handleInputChange}
-                                    value={formData[field as keyof typeof formData]}
-                                    required
-                                />
-                            ) : field === "granteligibility" ? (
-                                <select
-                                    name={field}
-                                    className="border border-gray-400 rounded p-2 w-64"
-                                    onChange={handleInputChange}
-                                    value={formData[field as keyof typeof formData]}
-                                    required
-                                >
-                                    <option value="" disabled>
-                                        Select {fieldDisplayNames[field]}
-                                    </option>
-                                    {eligibility.map((option) => (
-                                        <option key={option} value={option}>
-                                            {option}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : ["householdsize", "income", "translations"].includes(field) ? (
-                                <input
-                                    type="number"
-                                    name={field}
-                                    className="border border-gray-400 rounded p-2 w-64"
-                                    onChange={handleInputChange}
-                                    value={formData[field as keyof typeof formData]}
-                                    required
-                                />
-                            ) : field === "additionalforms" ? (
-                                <select
-                                    name={field}
-                                    className="border border-gray-400 rounded p-2 w-64"
-                                    onChange={handleInputChange}
-                                    value={formData[field as keyof typeof formData]}
-                                    required
-                                >
-                                    <option value="" disabled>
-                                        Select {fieldDisplayNames[field]}
-                                    </option>
-                                    {additionalForms.map((form) => (
-                                        <option key={form} value={form}>
-                                            {form}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : field === "casenotes" ? (
-                                <textarea
-                                    name={field}
-                                    className="border border-gray-400 rounded p-2 w-64"
-                                    onChange={handleInputChange}
-                                    value={formData[field as keyof typeof formData]}
-                                    required
-                                />
-                            ) : field === "grantreferenceno" ? (
-                                <input
-                                    type="text"
-                                    name={field}
-                                    className="border border-gray-400 rounded p-2 w-64"
-                                    onChange={handleInputChange}
-                                    value={formData[field as keyof typeof formData]}
-                                    required
-                                />
-                            ) : field === "reported" ? (
-                                <select
-                                    name={field}
-                                    className="border border-gray-400 rounded p-2 w-64"
-                                    onChange={handleInputChange}
-                                    value={formData[field as keyof typeof formData]}
-                                    required
-                                >
-                                    <option value="true">Yes</option>
-                                    <option value="false">No</option>
-                                </select>
-                            ) : null}
-                        </div>
-                    ) : null
-                )}
-                <button
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-                >
-                    Submit
-                </button>
-            </form>
-            {successMessage && (
-                <div className="mt-4 text-center">
-                    <p className="text-green-500 font-bold">{successMessage}</p>
-                </div>
-            )}
-        </div>
-    );
-};
-
-export default AddProcess;
-*/

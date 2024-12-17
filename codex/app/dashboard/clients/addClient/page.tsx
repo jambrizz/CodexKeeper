@@ -52,6 +52,11 @@ const AddClient = () => {
     const [countdown, setCountdown] = useState<number | null>(null);
     const router = useRouter();
 
+    const handleBackClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        router.push("/dashboard/clients");
+    };
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -164,12 +169,21 @@ const AddClient = () => {
                         </div>
                     ) : null
                 )}
-                <button
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-                >
-                    Submit
-                </button>
+                <div className="flex flex-row m-3 gap-4">
+                    <button
+                        type="submit"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                    >
+                        Submit
+                    </button>
+                    <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+                        onClick={handleBackClick}
+                    >
+                        Back to Clients
+                    </button>
+                </div>
+
             </form>
             {successMessage && (
                 <div className="mt-4 text-center">

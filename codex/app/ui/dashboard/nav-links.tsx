@@ -4,6 +4,8 @@ import {
   DocumentDuplicateIcon,
   ChartBarSquareIcon,
   BanknotesIcon,
+  Cog8ToothIcon,
+  BuildingLibraryIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
@@ -34,6 +36,16 @@ const links = [
         name: 'Budget',
         href: '/dashboard/budget',
         icon: BanknotesIcon,
+    },
+    {
+        name: 'Settings',
+        href: '/dashboard/userpage',
+        icon: Cog8ToothIcon,
+    },
+    {
+        name: 'Admin',
+        href: '/dashboard/users',
+        icon: BuildingLibraryIcon,
     },
 ];
 

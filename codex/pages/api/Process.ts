@@ -67,7 +67,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 if (isNaN(processId)) {
                     return res.status(400).json({ message: "Invalid process ID" });
                 }
-                const result = await sql`SELECT * FROM process WHERE id = ${processId}`;
+                //const result = await sql`SELECT * FROM process WHERE id = ${processId}`;
+                const result = await sql`
+                    SELECT p.*, c.firstname, c.middlename, c.lastname, c.dob, c.servicelanguage, c.gender, c.countyofresidence
+                    FROM process p
+                    JOIN clients c ON p.clientid = c.id
+                    WHERE p.id = ${processId}
+                `;
                 if (result.rowCount === 0) {
                     return res.status(404).json({ message: "Process not found" });
                 }

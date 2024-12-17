@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense } from "react";
+//import { useRouter } from "next/router";
 
 interface Client {
     id: number;
@@ -27,6 +28,12 @@ const ClientDetails = () => {
     const searchParams = useSearchParams();
     const [client, setClient] = useState<Client | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
+
+    const handleBackClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        router.push("/dashboard/clients");
+    };
 
     const fetchClientDetails = async (id: number) => {
         try {
@@ -114,6 +121,12 @@ const ClientDetails = () => {
             <div id="DisplayClientProcesses" className="flex flex-col items-center">
 
             </div>
+            <button
+                className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+                onClick={handleBackClick}
+            >
+                Back to Clients
+            </button>
         </div>
     );
 };

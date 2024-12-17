@@ -97,6 +97,11 @@ const UpdateClientComponent = () => {
         fetchClientData();
     }, [clientId]);
 
+    const handleBackClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        router.push("/dashboard/clients");
+    };
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -360,12 +365,20 @@ const UpdateClientComponent = () => {
                 <input type="hidden" name="datetimestamp" value={formData.datetimestamp ?? ""} />
                 <input type="hidden" name="createdby" value={formData.createdby ?? ""} />
 
-                <button
-                    type="submit"
-                    className="mt-4 py-2 px-6 bg-blue-500 text-white rounded"
-                >
-                    Update Client
-                </button>
+                <div className="flex flex-row m-3 gap-4">
+                    <button
+                        type="submit"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                    >
+                        Submit
+                    </button>
+                    <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+                        onClick={handleBackClick}
+                    >
+                        Back to Clients
+                    </button>
+                </div>
             </form>
 
             {successMessage && (
