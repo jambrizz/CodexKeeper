@@ -1,4 +1,3 @@
-//import { z } from "zod";
 import { sql } from "@vercel/postgres";
 import { NextApiRequest, NextApiResponse } from "next";
 import { processSchema } from "@/app/model/processValidation"; 
@@ -63,11 +62,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         try {
             if (id) {
-                const processId = Array.isArray(id) ? Number(id[0]) : Number(id); // Convert `id` to a number
+                const processId = Array.isArray(id) ? Number(id[0]) : Number(id); 
                 if (isNaN(processId)) {
                     return res.status(400).json({ message: "Invalid process ID" });
                 }
-                //const result = await sql`SELECT * FROM process WHERE id = ${processId}`;
+                
                 const result = await sql`
                     SELECT p.*, c.firstname, c.middlename, c.lastname, c.dob, c.servicelanguage, c.gender, c.countyofresidence
                     FROM process p

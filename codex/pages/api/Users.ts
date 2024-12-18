@@ -1,4 +1,3 @@
-// pages/api/Users.ts
 import { NextApiRequest, NextApiResponse } from "next";
 import { db } from "@vercel/postgres";
 import { usersValidation } from "@/app/model/usersValidation";

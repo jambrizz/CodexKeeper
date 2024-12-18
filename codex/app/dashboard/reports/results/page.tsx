@@ -37,10 +37,13 @@ export default function ReportResultsPage() {
     };
 
     const exportAsPDF = () => {
+        // I need to implement this feature and figure out if I need to get a license for it
         alert("PDF export coming soon!");
     };
 
     const exportAsExcel = () => {
+        // I need to implement this feature and figure out if I need to get a license for it
+        // This one is crucial to make things easier for the user
         alert("Excel export coming soon!");
     };
 
