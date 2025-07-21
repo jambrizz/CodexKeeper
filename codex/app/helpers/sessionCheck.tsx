@@ -1,5 +1,30 @@
 "use client";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { ReactNode, useEffect } from "react";
 
+type Props = {
+    children: ReactNode;
+};
+
+export default function SessionCheck({ children }: Props) {
+    const { status } = useSession();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            router.replace("/login")
+        }
+    }, [status, router]);
+
+    if (status === "loading") {
+        return <div>Loading...</div>
+    }
+
+    return <>{children}</>;
+}
+
+/*
 export function checkSessionAndInactivity() {
     const cookies = document.cookie.split('; ').map(c => c.trim());
     const sessionCookie = cookies.find(c => c.startsWith('session='));
@@ -35,3 +60,4 @@ export function checkSessionAndInactivity() {
         return { loggedIn: false, auth_level: 0, firstname: '', lastname: '' };
     }
 }
+*/
