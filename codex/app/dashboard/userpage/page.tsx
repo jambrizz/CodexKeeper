@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+﻿import { redirect } from 'next/navigation';
 import { checkSessionAndInactivityServerSide } from '../../lib/session'; 
 import UserForm from './UserForm'; // Client Component
 import { db } from '@vercel/postgres'; 
@@ -26,7 +26,7 @@ export default async function UserPage() {
 
     return (
         <div className="flex flex-col items-center p-4">
-            <h1 className="text-4xl mb-4">Update Profile</h1>
+            <h1 className="mb-4 text-4xl">Update Profile</h1>
             <UserForm
                 initialFirstname={session.firstname}
                 initialLastname={session.lastname}

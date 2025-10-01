@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Search from '@/app/ui/search';
 import { lusitana } from '@/app/ui/fonts';
@@ -49,8 +49,15 @@ const ProcessesPage = () => {
     };
 
     const handleEdit = (id: number) => {
-        console.log("Edit process with ID:", id);
+        //console.log("Edit process with ID:", id);
         // Implement edit logic here if needed
+        if (!id) {
+            console.error("No Process ID available to edit");
+            return;
+        } else {
+            router.push(`/dashboard/processes/updateProcess?=${id}`);
+        }
+
     };
 
     const handleDelete = async (id: number) => {
@@ -130,33 +137,33 @@ const ProcessesPage = () => {
                 <div className="mb-4">
                     <button
                         onClick={handleAddProcessClick}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
                     >
                         Add Process
                     </button>
                 </div>
             </div>
 
-            <div className="flex flex-row justify-center items-center m-3 gap-4">
+            <div className="m-3 flex flex-row items-center justify-center gap-4">
                 {/* Search Feature */}
-                <div id="searchFeature" className="flex flex-row items-center mb-4 gap-2">
+                <div id="searchFeature" className="mb-4 flex flex-row items-center gap-2">
                     <label className="mb-2 font-semibold">Search clients:</label>
                     <input
                         type="text"
                         placeholder="Type clients name..."
-                        className="border border-gray-400 rounded p-2 w-64"
+                        className="w-64 rounded border border-gray-400 p-2"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
 
                 {/* Process Filter Dropdown */}
-                <div className="flex flex-row items-center mb-4 gap-2">
+                <div className="mb-4 flex flex-row items-center gap-2">
                     <label className="mb-2 font-semibold">Filter by Process Type:</label>
                     <select
                         value={selectedProcessType}
                         onChange={handleProcessFilterChange}
-                        className="border border-gray-400 rounded p-2 w-64"
+                        className="w-64 rounded border border-gray-400 p-2"
                     >
                         <option value="All">All</option>
                         {processList.map((p) => (
@@ -168,12 +175,12 @@ const ProcessesPage = () => {
                 </div>
 
                 {/* Pagination Limit Dropdown */}
-                <div className="flex flex-row items-center mb-4 gap-2">
+                <div className="mb-4 flex flex-row items-center gap-2">
                     <label className="mb-2 font-semibold">Show clients per page:</label>
                     <select
                         value={limit === 0 ? "All" : limit.toString()}
                         onChange={handleLimitChange}
-                        className="border border-gray-400 rounded p-2 w-20"
+                        className="w-20 rounded border border-gray-400 p-2"
                     >
                         <option value="25">25</option>
                         <option value="50">50</option>
@@ -188,7 +195,7 @@ const ProcessesPage = () => {
                     displayedProcesses.map((process) => (
                         <div
                             key={process.id}
-                            className="flex flex-row border p-3 m-2 w-[700px] space-x-4 items-center"
+                            className="m-2 flex w-[700px] flex-row items-center space-x-4 border p-3"
                         >
                             <div className="flex-grow">
                                 <p>
@@ -208,19 +215,19 @@ const ProcessesPage = () => {
                             </div>
                             <div className="flex space-x-2">
                                 <button
-                                    className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                                    className="rounded bg-blue-500 px-2 py-1 text-white hover:bg-blue-600"
                                     onClick={() => handleView(process.id)}
                                 >
                                     View
                                 </button>
                                 <button
-                                    className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
+                                    className="rounded bg-yellow-500 px-2 py-1 text-white hover:bg-yellow-600"
                                     onClick={() => handleEdit(process.id)}
                                 >
                                     Edit
                                 </button>
                                 <button
-                                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                    className="rounded bg-red-500 px-2 py-1 text-white hover:bg-red-600"
                                     onClick={() => handleDelete(process.id)}
                                 >
                                     Delete
@@ -235,7 +242,7 @@ const ProcessesPage = () => {
 
             {/* Pagination Controls need to go back and make a seperate file for this in UI*/}
             {limit > 0 && totalPages > 1 && (
-                <div className="flex flex-row justify-center items-center mt-4 space-x-2">
+                <div className="mt-4 flex flex-row items-center justify-center space-x-2">
                     <button
                         disabled={currentPage === 1}
                         onClick={() => setCurrentPage((prev) => prev - 1)}
