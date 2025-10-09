@@ -1,7 +1,7 @@
 ﻿"use client"
-//updatePrcess Page
+//updateProcess Page
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { processSchema } from "@/app/model/processValidation";
 import { z } from "zod";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -43,7 +43,7 @@ const fieldDisplayNames: { [key: string]: string } = {
 const UpdateProcessComponent: React.FC = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const id = searchParams?.get("id") || null; 
+    const processID = searchParams?.get("id") || null; 
     const datetimeStamp = searchParams?.get("datetimeStamp") || null;
     const createdBy = searchParams?.get("createdBy") || null;
 
@@ -86,13 +86,14 @@ const UpdateProcessComponent: React.FC = () => {
         countyofresidence: ""
     });
 
+    console.log(processID);
 
     //Fetch the process data by ID
     useEffect(() => {
-        if (!id) return;
+        if (!processID) return;
         const fetchProcess = async () => {
             try {
-                const response = await fetch(`/api/Process?id=${id}`);
+                const response = await fetch(`/api/Process?id=${processID}`);
                 if (!response.ok) throw new Error("Failed to fetch process");
                 const data = await response.json();
                 // Fill formData with fetched record
@@ -102,7 +103,7 @@ const UpdateProcessComponent: React.FC = () => {
             }
         };
         fetchProcess();
-    }, [id]);
+    }, [processID]);
 
     //Fetch clients for dropdown
     useEffect(() => {
@@ -170,7 +171,8 @@ const UpdateProcessComponent: React.FC = () => {
             const response = await fetch("/api/Process", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ...parsedData, id }),
+                body: JSON.stringify({ ...parsedData, processID
+                    }),
             });
             if (!response.ok) throw new Error(`Failed to update process: ${response.statusText}`);
             setSuccessMessage("Process updated successfully!");

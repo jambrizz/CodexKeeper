@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
     racialEthnicIdentity,
@@ -148,15 +148,15 @@ const UpdateClientComponent = () => {
 
     return (
         <div className="flex flex-col items-center">
-            <h1 className="text-4xl mb-4">Update Client</h1>
+            <h1 className="mb-4 text-4xl">Update Client</h1>
             <form onSubmit={handleSubmit} className="flex flex-col items-center">
                 {/* First Name */}
-                <div className="flex flex-col items-start mb-2">
-                    <label className="font-semibold mb-1">First Name</label>
+                <div className="mb-2 flex flex-col items-start">
+                    <label className="mb-1 font-semibold">First Name</label>
                     <input
                         type="text"
                         name="firstname"
-                        className="border border-gray-400 rounded p-2 w-64"
+                        className="w-64 rounded border border-gray-400 p-2"
                         onChange={handleInputChange}
                         value={formData.firstname}
                         required
@@ -164,24 +164,24 @@ const UpdateClientComponent = () => {
                 </div>
 
                 {/* Middle Name */}
-                <div className="flex flex-col items-start mb-2">
-                    <label className="font-semibold mb-1">Middle Name</label>
+                <div className="mb-2 flex flex-col items-start">
+                    <label className="mb-1 font-semibold">Middle Name</label>
                     <input
                         type="text"
                         name="middlename"
-                        className="border border-gray-400 rounded p-2 w-64"
+                        className="w-64 rounded border border-gray-400 p-2"
                         onChange={handleInputChange}
                         value={formData.middlename || ""}
                     />
                 </div>
 
                 {/* Last Name */}
-                <div className="flex flex-col items-start mb-2">
-                    <label className="font-semibold mb-1">Last Name</label>
+                <div className="mb-2 flex flex-col items-start">
+                    <label className="mb-1 font-semibold">Last Name</label>
                     <input
                         type="text"
                         name="lastname"
-                        className="border border-gray-400 rounded p-2 w-64"
+                        className="w-64 rounded border border-gray-400 p-2"
                         onChange={handleInputChange}
                         value={formData.lastname}
                         required
@@ -189,12 +189,12 @@ const UpdateClientComponent = () => {
                 </div>
 
                 {/* Date of Birth */}
-                <div className="flex flex-col items-start mb-2">
-                    <label className="font-semibold mb-1">Date of Birth</label>
+                <div className="mb-2 flex flex-col items-start">
+                    <label className="mb-1 font-semibold">Date of Birth</label>
                     <input
                         type="date"
                         name="dob"
-                        className="border border-gray-400 rounded p-2 w-64"
+                        className="w-64 rounded border border-gray-400 p-2"
                         onChange={handleInputChange}
                         value={formData.dob || ""}
                         required
@@ -202,11 +202,11 @@ const UpdateClientComponent = () => {
                 </div>
 
                 {/* Race/Ethnic Identity */}
-                <div className="flex flex-col items-start mb-2">
-                    <label className="font-semibold mb-1">Race/Ethnic Identity</label>
+                <div className="mb-2 flex flex-col items-start">
+                    <label className="mb-1 font-semibold">Race/Ethnic Identity</label>
                     <select
                         name="raceethnicidentity"
-                        className="border border-gray-400 rounded p-2 w-64"
+                        className="w-64 rounded border border-gray-400 p-2"
                         onChange={handleInputChange}
                         value={formData.raceethnicidentity}
                         required
@@ -223,11 +223,11 @@ const UpdateClientComponent = () => {
                 </div>
 
                 {/* Service Language */}
-                <div className="flex flex-col items-start mb-2">
-                    <label className="font-semibold mb-1">Service Language</label>
+                <div className="mb-2 flex flex-col items-start">
+                    <label className="mb-1 font-semibold">Service Language</label>
                     <select
                         name="servicelanguage"
-                        className="border border-gray-400 rounded p-2 w-64"
+                        className="w-64 rounded border border-gray-400 p-2"
                         onChange={handleInputChange}
                         value={formData.servicelanguage}
                         required
@@ -244,11 +244,11 @@ const UpdateClientComponent = () => {
                 </div>
 
                 {/* Country of Origin */}
-                <div className="flex flex-col items-start mb-2">
-                    <label className="font-semibold mb-1">Country of Origin</label>
+                <div className="mb-2 flex flex-col items-start">
+                    <label className="mb-1 font-semibold">Country of Origin</label>
                     <select
                         name="countryoforigin"
-                        className="border border-gray-400 rounded p-2 w-64"
+                        className="w-64 rounded border border-gray-400 p-2"
                         onChange={handleInputChange}
                         value={formData.countryoforigin}
                         required
@@ -265,11 +265,11 @@ const UpdateClientComponent = () => {
                 </div>
 
                 {/* Gender */}
-                <div className="flex flex-col items-start mb-2">
-                    <label className="font-semibold mb-1">Gender</label>
+                <div className="mb-2 flex flex-col items-start">
+                    <label className="mb-1 font-semibold">Gender</label>
                     <select
                         name="gender"
-                        className="border border-gray-400 rounded p-2 w-64"
+                        className="w-64 rounded border border-gray-400 p-2"
                         onChange={handleInputChange}
                         value={formData.gender}
                         required
@@ -286,11 +286,11 @@ const UpdateClientComponent = () => {
                 </div>
 
                 {/* Sexual Orientation */}
-                <div className="flex flex-col items-start mb-2">
-                    <label className="font-semibold mb-1">Sexual Orientation</label>
+                <div className="mb-2 flex flex-col items-start">
+                    <label className="mb-1 font-semibold">Sexual Orientation</label>
                     <select
                         name="sexualorientation"
-                        className="border border-gray-400 rounded p-2 w-64"
+                        className="w-64 rounded border border-gray-400 p-2"
                         onChange={handleInputChange}
                         value={formData.sexualorientation}
                         required
@@ -307,11 +307,11 @@ const UpdateClientComponent = () => {
                 </div>
 
                 {/* Age */}
-                <div className="flex flex-col items-start mb-2">
-                    <label className="font-semibold mb-1">Age</label>
+                <div className="mb-2 flex flex-col items-start">
+                    <label className="mb-1 font-semibold">Age</label>
                     <input
                         name="age"
-                        className="border border-gray-400 rounded p-2 w-64"
+                        className="w-64 rounded border border-gray-400 p-2"
                         onChange={handleInputChange}
                         value={formData.age}
                         required
@@ -319,11 +319,11 @@ const UpdateClientComponent = () => {
                 </div>
 
                 {/* Education Level */}
-                <div className="flex flex-col items-start mb-2">
-                    <label className="font-semibold mb-1">Education Level</label>
+                <div className="mb-2 flex flex-col items-start">
+                    <label className="mb-1 font-semibold">Education Level</label>
                     <select
                         name="educationlevel"
-                        className="border border-gray-400 rounded p-2 w-64"
+                        className="w-64 rounded border border-gray-400 p-2"
                         onChange={handleInputChange}
                         value={formData.educationlevel}
                         required
@@ -340,11 +340,11 @@ const UpdateClientComponent = () => {
                 </div>
 
                 {/* County of Residence */}
-                <div className="flex flex-col items-start mb-2">
-                    <label className="font-semibold mb-1">County of Residence</label>
+                <div className="mb-2 flex flex-col items-start">
+                    <label className="mb-1 font-semibold">County of Residence</label>
                     <select
                         name="countyofresidence"
-                        className="border border-gray-400 rounded p-2 w-64"
+                        className="w-64 rounded border border-gray-400 p-2"
                         onChange={handleInputChange}
                         value={formData.countyofresidence}
                         required
@@ -365,15 +365,15 @@ const UpdateClientComponent = () => {
                 <input type="hidden" name="datetimestamp" value={formData.datetimestamp ?? ""} />
                 <input type="hidden" name="createdby" value={formData.createdby ?? ""} />
 
-                <div className="flex flex-row m-3 gap-4">
+                <div className="m-3 flex flex-row gap-4">
                     <button
                         type="submit"
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                        className="mt-4 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
                     >
                         Submit
                     </button>
                     <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+                        className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
                         onClick={handleBackClick}
                     >
                         Back to Clients
@@ -382,7 +382,7 @@ const UpdateClientComponent = () => {
             </form>
 
             {successMessage && (
-                <div className="mt-4 text-green-500 font-semibold">{successMessage}</div>
+                <div className="mt-4 font-semibold text-green-500">{successMessage}</div>
             )}
         </div>
     );

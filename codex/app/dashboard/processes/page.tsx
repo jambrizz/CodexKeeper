@@ -55,7 +55,7 @@ const ProcessesPage = () => {
             console.error("No Process ID available to edit");
             return;
         } else {
-            router.push(`/dashboard/processes/updateProcess?=${id}`);
+            router.push(`/dashboard/processes/updateProcess?id=${id}`);
         }
 
     };
