@@ -110,7 +110,7 @@ const UpdateClientComponent = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        console.log("Form data:", formData);
+        //console.log("Form data:", formData);
 
         try {
             const normalizedData = {

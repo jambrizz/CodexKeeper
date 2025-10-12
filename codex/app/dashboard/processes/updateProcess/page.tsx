@@ -86,7 +86,7 @@ const UpdateProcessComponent: React.FC = () => {
         countyofresidence: ""
     });
 
-    console.log(processID);
+    console.log("Form data:", formData);
 
     //Fetch the process data by ID
     useEffect(() => {
@@ -94,10 +94,16 @@ const UpdateProcessComponent: React.FC = () => {
         const fetchProcess = async () => {
             try {
                 const response = await fetch(`/api/Process?id=${processID}`);
-                if (!response.ok) throw new Error("Failed to fetch process");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch process");
+                }
                 const data = await response.json();
+                const { dateofdropoff, ...visibleData } = data;
                 // Fill formData with fetched record
-                setFormData((prev) => ({ ...prev, ...data }));
+                //setFormData((prev) => ({ ...prev, ...data }));
+
+                const formattedDODO = dateofdropoff ? new Date(dateofdropoff).toISOString().split('T')[0] : '';
+                setFormData({ ...visibleData, dateofdropoff: formattedDODO, })
             } catch (error) {
                 console.error("Error fetching process", error);
             }
@@ -166,6 +172,9 @@ const UpdateProcessComponent: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        console.log("Form data:", formData);
+        /*
         try {
             const parsedData = processSchema.parse(formData);
             const response = await fetch("/api/Process", {
@@ -187,6 +196,7 @@ const UpdateProcessComponent: React.FC = () => {
                 alert("An error occurred during submission.");
             }
         }
+        */
     };
 
     return (
@@ -208,7 +218,7 @@ const UpdateProcessComponent: React.FC = () => {
                                 <option value="" disabled>Select Client</option>
                                 {clients.map((client) => (
                                     <option key={client.id} value={client.id}>
-                                        {client.firstname} {client.middlename || ""} {client.lastname} {new Date(client.dob).toLocaleDateString("en-US")}
+                                        {client.firstname} {client.middlename || ""} {client.lastname} 
                                     </option>
                                 ))}
                             </select>
@@ -290,7 +300,7 @@ const UpdateProcessComponent: React.FC = () => {
                             name="dateofdropoff"
                             className="w-64 rounded border border-gray-400 p-2"
                             onChange={handleInputChange}
-                            value={formData.dateofdropoff}
+                            value={formData.dateofdropoff || ""}
                             required
                         />
                     </div>
@@ -477,7 +487,7 @@ const UpdateProcessComponent: React.FC = () => {
                         </button>
                         <button
                             className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
-                            //onClick={handleBackClick}
+                            onClick={handleBackClick}
                         >
                             Back to Processes
                         </button>
