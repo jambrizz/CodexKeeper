@@ -61,8 +61,33 @@ const ProcessesPage = () => {
     };
 
     const handleDelete = async (id: number) => {
-        console.log("Delete process with ID:", id);
+        //console.log("Delete process with ID:", id);
         // Implement delete logic here if needed
+
+        const confirmed = window.confirm("Are you sure you want to delete this process");
+        if (!confirmed) { 
+            return; //Exit if the user cancels
+        }
+
+        try {
+            const response = await fetch(`/api/Process`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ id }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to delete process: ${response.statusText}`);
+            }
+
+            alert("Process Deleted successfully.");
+            setProcesses((prevProcesses) => prevProcesses.filter((process) => process.id !== id));
+        } catch (error) {
+            console.error("Error deleting process:", error);
+            alert("Failed to delete process. Please try again.")
+        }
     };
 
     const getProcessesFromAPI = async (): Promise<Process[]> => {
@@ -76,7 +101,6 @@ const ProcessesPage = () => {
     const getAllProcesses = async () => {
         try {
             const processes = await getProcessesFromAPI();
-            console.log("Processes:", processes);
             setProcesses(processes);
         } catch (error) {
             console.error("Failed to fetch processes:", error);

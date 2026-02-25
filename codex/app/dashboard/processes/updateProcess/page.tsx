@@ -86,7 +86,7 @@ const UpdateProcessComponent: React.FC = () => {
         countyofresidence: ""
     });
 
-    console.log("Form data:", formData);
+    //console.log("Form data:", formData);
 
     //Fetch the process data by ID
     useEffect(() => {
@@ -101,7 +101,7 @@ const UpdateProcessComponent: React.FC = () => {
                 const { dateofdropoff, ...visibleData } = data;
                 // Fill formData with fetched record
                 //setFormData((prev) => ({ ...prev, ...data }));
-
+                /////////////////////////////////////////////////////where i left off
                 const formattedDODO = dateofdropoff ? new Date(dateofdropoff).toISOString().split('T')[0] : '';
                 setFormData({ ...visibleData, dateofdropoff: formattedDODO, })
             } catch (error) {
@@ -173,32 +173,151 @@ const UpdateProcessComponent: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        console.log("Form data:", formData);
-        /*
+        const setTier = (processtype: string): void => {
+            const process = formData.processtype;
+
+            if (
+                process === "Legal Consultation" ||
+                process === "App. For Perm. Res. Card" ||
+                process === "RFE" ||
+                process === "NOID" ||
+                process === "Initial Application" ||
+                process === "Renewal Application"
+            ) {
+                formData.tier = "Tier 1";
+            } else if (
+                process === "Naturalization Certificate" ||
+                process === "Citizenship Certificate" ||
+                process === "FOIA Request" ||
+                process === "Criminal Record Reeview" ||
+                process === "Refugee Relative" ||
+                process === "Asylee Relative"
+            ) {
+                formData.tier = "Tier 2";
+            } else if (
+                process === "Application for Certificate of Naturalization" ||
+                process === "Legal Rep. at USCIS Interview"
+            ) {
+                formData.tier = "Tier 3";
+            } else if (
+                process === "DACA" ||
+                process === "Naturalization" ||
+                process === "Removal of Conditions" ||
+                process === "Advance Parole" ||
+                process === "Parole in Place" ||
+                process === "Humanitarian Parole" ||
+                process === "TPS w/ EAD" ||
+                process === "Petition by US Citizen" ||
+                process === "Petition by LPR in CA"
+            ) {
+                formData.tier = "Tier 4";
+            } else if (
+                process === "DACA w/ Criminal History" ||
+                process === "DACA w/ appeal(s)" ||
+                process === "Natz w/ Criminal History" ||
+                process === "Natz w/ Appeal(s)" ||
+                process === "Natz w/ Medical Waiver"
+            ) {
+                formData.tier = "Tier 5";
+            } else if (
+                process === "Asylum" ||
+                process === "U-VISA" ||
+                process === "T-VISA" ||
+                process === "VAWA" ||
+                process === "SIJS" ||
+                process === "AOS" ||
+                process === "One-Step AOS" ||
+                process === "Provisional Unlawful"
+            ) {
+                formData.tier = "Tier 6";
+            }
+        };
+
+        // Set the tier when the form is submitted based on selected process type
+        setTier(formData.processtype);
+
+        if (!processID) {
+            alert("Missing process ID. Cannot update.");
+            return;
+        }
+
+        // Build a payload that matches your Zod schema types
+        const payload = {
+            ...formData,
+
+            // numbers required by schema
+            clientid: Number(formData.clientid),
+            householdsize: Number(formData.householdsize),
+            income: Number(formData.income),
+            translations: Number(formData.translations),
+
+            // required by schema (make sure these exist)
+            tier: formData.tier, // <-- must be present or schema will fail
+            datetimestamp: formData.datetimestamp || datetimeStamp || new Date().toISOString(),
+            createdby: formData.createdby || createdBy || "",
+
+            // optional nullable fields
+            dataentryassignment: formData.dataentryassignment || null,
+            dataentrycompletion: formData.dataentrycompletion ?? null, // already null-able in your state logic
+            staffpickup: formData.staffpickup || null,
+            dateofpickup: formData.dateofpickup ?? null,
+            additionalforms: formData.additionalforms || null,
+            casenotes: formData.casenotes || null,
+            grantreferenceno: formData.grantreferenceno || null,
+
+            // keep as string "true"/"false" per your schema
+            reported: formData.reported,
+        };
+
         try {
-            const parsedData = processSchema.parse(formData);
-            const response = await fetch("/api/Process", {
+            // Validate on the client before calling the API
+            const parsedData = processSchema.parse(payload);
+
+            const response = await fetch(`/api/Process?id=${processID}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ...parsedData, processID
-                    }),
+                body: JSON.stringify(parsedData),
             });
-            if (!response.ok) throw new Error(`Failed to update process: ${response.statusText}`);
+
+            // If API returns Zod errors (or any errors), show them
+            if (!response.ok) {
+                const err = await response.json().catch(() => null);
+
+                // If your API returns { errors: {...}, message: "..." }
+                if (err?.errors) {
+                    const messages: string[] = [];
+
+                    for (const key of Object.keys(err.errors)) {
+                        const display = fieldDisplayNames[key] ?? key;
+                        const fieldErrors: string[] = err.errors[key];
+                        fieldErrors.forEach((m) => messages.push(`${display}: ${m}`));
+                    }
+
+                    alert(`${err.message ?? "Validation failed"}\n\n${messages.join("\n")}`);
+                    return;
+                }
+
+                throw new Error(err?.message || `Failed to update process: ${response.statusText}`);
+            }
+
             setSuccessMessage("Process updated successfully!");
-            setTimeout(() => router.push("/dashboard/processes"), 2000);
+            setTimeout(() => router.push("/dashboard/processes"), 1500);
         } catch (error) {
             if (error instanceof z.ZodError) {
-                const errorMessages = error.issues.map(
-                    (issue) => `Field "${issue.path.join(".")}": ${issue.message}`
-                );
+                const errorMessages = error.issues.map((issue) => {
+                    const key = String(issue.path?.[0] ?? "");
+                    const display = fieldDisplayNames[key] ?? issue.path.join(".");
+                    return `${display}: ${issue.message}`;
+                });
+
                 alert(`Validation failed:\n\n${errorMessages.join("\n")}`);
             } else {
+                console.error(error);
                 alert("An error occurred during submission.");
             }
         }
-        */
     };
-
+    
     return (
         <>
             <div className="flex flex-col items-center">
