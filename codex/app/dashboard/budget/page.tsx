@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -14,7 +14,7 @@ const BudgetsPage = () => {
     const router = useRouter();
 
     const handleAddBudgetClick = () => {
-        router.push("/dashboard/budgets/addBudget");
+        router.push("/dashboard/budget/addBudget");
     };
 
     const handleView = (id: number) => {
@@ -74,7 +74,7 @@ const BudgetsPage = () => {
                 <div>
                     <button
                         onClick={handleAddBudgetClick}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
                     >
                         Add Budget
                     </button>
@@ -88,7 +88,7 @@ const BudgetsPage = () => {
                     budgets.map((budget) => (
                         <div
                             key={budget.id} // Correct key usage
-                            className="flex flex-row border p-3 m-2 w-[600px] space-x-4 items-center"
+                            className="m-2 flex w-[600px] flex-row items-center space-x-4 border p-3"
                         >
                             <div className="flex-grow">
                                 <p>
@@ -97,19 +97,19 @@ const BudgetsPage = () => {
                             </div>
                             <div className="flex space-x-2">
                                 <button
-                                    className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                                    className="rounded bg-blue-500 px-2 py-1 text-white hover:bg-blue-600"
                                     onClick={() => handleView(budget.id)}
                                 >
                                     View
                                 </button>
                                 <button
-                                    className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
+                                    className="rounded bg-yellow-500 px-2 py-1 text-white hover:bg-yellow-600"
                                     onClick={() => handleEdit(budget.id)}
                                 >
                                     Edit
                                 </button>
                                 <button
-                                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                    className="rounded bg-red-500 px-2 py-1 text-white hover:bg-red-600"
                                     onClick={() => handleDelete(budget.id)}
                                 >
                                     Delete
