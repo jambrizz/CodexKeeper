@@ -1,6 +1,7 @@
 ﻿import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
-const CreateBudget = () => {
+const CreateContract = () => {
     const [formData, setFormData] = useState({
         contractName: "",
         contractTotal: "",
@@ -15,7 +16,15 @@ const CreateBudget = () => {
         translationRate: "",
         interpretationRate: "",
         fpRate: "",
+        eoiAmount: "",
+        eoiRate: "",
+        eoeAmount: "",
+        eoeRate: ""
     });
+
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [countdown, setCountdown] = useState<number | null>(null);
+    const router = useRouter();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         //Complete this code section
@@ -23,11 +32,26 @@ const CreateBudget = () => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleBackClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        router.push("/dashboard/contract");
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        console.log(formData);
+        //TODO add Try/Catch statement
+    }
+
     return (
         <>
             <div className="flex flex-col items-center">
                 <h1 className="mb-4 text-4xl">Create Budget</h1>
-                <form className="flex flex-col items-center">
+                <form
+                    className="flex flex-col items-center"
+                    onSubmit={handleSubmit}
+                >
                     <div className="mt-6 w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-md">
                         <h2 className="mb-4 text-2xl font-semibold text-gray-700">
                             Contract Information
@@ -227,10 +251,85 @@ const CreateBudget = () => {
                             required
                         />
                     </div>
+                    <div className="mt-6 w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-md">
+                        <h2 className="mb-4 text-2xl font-semibold text-gray-700">
+                            Education & Outreach Section
+                        </h2>
+
+                        <label className="mb-1 font-semibold text-gray-600">
+                            Education & Outreach Individual Amount
+                        </label>
+
+                        <input
+                            type="number"
+                            name="eoiAmount"
+                            placeholder="Enter numbers only"
+                            className="w-full rounded border border-gray-400 p-2 focus:border-blue-500 focus:outline-none"
+                            onChange={handleInputChange}
+                            value={formData.eoiAmount}
+                            required
+                        />
+
+                        <label className="mb-1 font-semibold text-gray-600">
+                           E&O Individual Rate
+                        </label>
+
+                        <input
+                            type="number"
+                            name="eoiRate"
+                            placeholder="Enter numbers only"
+                            className="w-full rounded border border-gray-400 p-2 focus:border-blue-500 focus:outline-none"
+                            onChange={handleInputChange}
+                            value={formData.eoiRate}
+                            required
+                        />
+
+                        <label className="mb-1 font-semibold text-gray-600">
+                            Education & Outreach Events Amount
+                        </label>
+
+                        <input
+                            type="number"
+                            name="eoeAmount"
+                            placeholder="Enter numbers only"
+                            className="w-full rounded border border-gray-400 p-2 focus:border-blue-500 focus:outline-none"
+                            onChange={handleInputChange}
+                            value={formData.eoeAmount}
+                            required
+                        />
+
+                        <label className="mb-1 font-semibold text-gray-600">
+                            E&O Event Rate
+                        </label>
+
+                        <input
+                            type="number"
+                            name="eoeRate"
+                            placeholder="Enter numbers only"
+                            className="w-full rounded border border-gray-400 p-2 focus:border-blue-500 focus:outline-none"
+                            onChange={handleInputChange}
+                            value={formData.eoeRate}
+                            required
+                        />
+                    </div>
+                    <div className="m-3 flex flex-row gap-4">
+                        <button
+                            type="submit"
+                            className="mt-4 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+                        >
+                            Submit
+                        </button>
+                        <button
+                            className="mt-4 rounded bg-blue-500 px-4 py-2 text-white"
+                            onClick={handleBackClick}
+                        >
+                            Back to Contracts
+                        </button>
+                    </div>
                 </form>
             </div>
         </>
     );
 };
 
-export default CreateBudget;
+export default CreateContract;

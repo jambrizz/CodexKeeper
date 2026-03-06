@@ -33,8 +33,8 @@ const links = [
         icon: ChartBarSquareIcon,
     },
     {
-        name: 'Budget',
-        href: '/dashboard/budget',
+        name: 'Contract',
+        href: '/dashboard/contract',
         icon: BanknotesIcon,
     },
     {
