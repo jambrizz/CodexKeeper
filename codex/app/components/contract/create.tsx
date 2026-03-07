@@ -1,5 +1,7 @@
 ﻿import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { contractSchema } from "@/app/model/contractValidation";
+import { z } from "zod";
 
 const CreateContract = () => {
     const [formData, setFormData] = useState({
@@ -41,7 +43,25 @@ const CreateContract = () => {
         e.preventDefault();
 
         console.log(formData);
-        //TODO add Try/Catch statement
+        
+        try {
+            const parsedData = contractSchema.parse(formData);
+
+            //console.log("Validation Data", parsedData);
+            // TODO add the POST feature
+            setSuccessMessage("Contract created successfully! you will be rerouted shortly.");
+            setTimeout(() => router.push("/dashboard/contract"), 2500);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                const errorMessages = error.issues.map(
+                    (issue) => `${issue.path.join(".")}: ${issue.message}`
+                );
+                alert(`Validation failed: \n\n${errorMessages.join("\n")}`)
+            } else {
+                console.error("Unexpected error:", error);
+                alert("An unexpected error ocurred.")
+            }
+        }
     }
 
     return (
@@ -327,6 +347,11 @@ const CreateContract = () => {
                         </button>
                     </div>
                 </form>
+                {successMessage && (
+                    <div className="mt-4 text-center">
+                        <p className="font-bold text-green-500">{successMessage}</p>
+                    </div>
+                )}
             </div>
         </>
     );

@@ -300,7 +300,7 @@ const UpdateProcessComponent: React.FC = () => {
                 throw new Error(err?.message || `Failed to update process: ${response.statusText}`);
             }
 
-            setSuccessMessage("Process updated successfully!");
+            setSuccessMessage("Process updated successfully! you will be rerouted shortly");
             setTimeout(() => router.push("/dashboard/processes"), 1500);
         } catch (error) {
             if (error instanceof z.ZodError) {
