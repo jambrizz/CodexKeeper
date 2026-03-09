@@ -2,11 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import inDollarFormat from "@/app/components/dollar/dollarFormat";
 
 interface Contract {
     id: number;
     contractname: string;
-    amount: number;
+    contracttotal: number;
+    tieramount: number;
+    supportamount: number;
+    eoiamount: number;
+    eoeamount: number;
 }
 
 const ContractsPage = () => {
@@ -87,29 +92,48 @@ const ContractsPage = () => {
                 {contracts.length > 0 ? (
                     contracts.map((contract) => (
                         <div
-                            key={contract.id} // Correct key usage
-                            className="m-2 flex w-[600px] flex-row items-center space-x-4 border p-3"
+                            key={contract.id}
+                            className="m-3 w-[700px] rounded-2xl border border-gray-200 bg-white p-5 shadow-md"
                         >
-                            <div className="flex-grow">
+                            <div className="mb-4">
+                                <h2 className="text-2xl font-semibold text-gray-700">
+                                    {contract.contractname}
+                                </h2>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
                                 <p>
-                                    <strong>Contract:</strong> {contract.contractname}
+                                    <strong>Contract Total:</strong> {inDollarFormat(contract.contracttotal)}
+                                </p>
+                                <p>
+                                    <strong>Tiers Amount:</strong> {inDollarFormat(contract.tieramount)}
+                                </p>
+                                <p>
+                                    <strong>Support Services Amount:</strong> {inDollarFormat(contract.supportamount)}
+                                </p>
+                                <p>
+                                    <strong>E&O Individuals Amount:</strong> {inDollarFormat(contract.eoiamount)}
+                                </p>
+                                <p>
+                                    <strong>E&O Events Amount:</strong> {inDollarFormat(contract.eoeamount)}
                                 </p>
                             </div>
-                            <div className="flex space-x-2">
+
+                            <div className="mt-4 flex space-x-2">
                                 <button
-                                    className="rounded bg-blue-500 px-2 py-1 text-white hover:bg-blue-600"
+                                    className="rounded bg-blue-500 px-3 py-1 text-white hover:bg-blue-600"
                                     onClick={() => handleView(contract.id)}
                                 >
                                     View
                                 </button>
                                 <button
-                                    className="rounded bg-yellow-500 px-2 py-1 text-white hover:bg-yellow-600"
+                                    className="rounded bg-yellow-500 px-3 py-1 text-white hover:bg-yellow-600"
                                     onClick={() => handleEdit(contract.id)}
                                 >
                                     Edit
                                 </button>
                                 <button
-                                    className="rounded bg-red-500 px-2 py-1 text-white hover:bg-red-600"
+                                    className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
                                     onClick={() => handleDelete(contract.id)}
                                 >
                                     Delete

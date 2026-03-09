@@ -42,13 +42,41 @@ const CreateContract = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        console.log(formData);
+        //console.log(formData);
         
         try {
             const parsedData = contractSchema.parse(formData);
 
             //console.log("Validation Data", parsedData);
-            // TODO add the POST feature
+
+            const response = await fetch("/api/Contracts", {
+                method: "POST",
+                headers: { "Content-type": "application/json" },
+                body: JSON.stringify(parsedData),
+            })
+
+            if (!response.ok) {
+                const err = await response.json().catch(() => null);
+
+                if (err?.errors) {
+                    const messages: string[] = [];
+
+                    for (const key of Object.keys(err.errrors)) {
+                        const fieldErrors: string[] = err.errors[key];
+                        fieldErrors.forEach((message) => {
+                            messages.push(`${key}: ${message}`);
+                        });
+                    }
+
+                    alert(`${err.message}\n\n${messages.join("\n")}`);
+                    return;
+                }
+                throw new Error(err?.message || "Failed to create contract")
+            }
+
+            const savedContract = await response.json();
+            //console.log("Saved contract:", savedContract);
+
             setSuccessMessage("Contract created successfully! you will be rerouted shortly.");
             setTimeout(() => router.push("/dashboard/contract"), 2500);
         } catch (error) {
