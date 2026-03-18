@@ -7,6 +7,8 @@ const CreateContract = () => {
     const [formData, setFormData] = useState({
         contractName: "",
         contractTotal: "",
+        contractStart: "",
+        contractEnd: "",
         tierAmount: "",
         tier1Rate: "",
         tier2Rate: "",
@@ -51,27 +53,33 @@ const CreateContract = () => {
 
             const response = await fetch("/api/Contracts", {
                 method: "POST",
-                headers: { "Content-type": "application/json" },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(parsedData),
             })
 
             if (!response.ok) {
                 const err = await response.json().catch(() => null);
-
+                
                 if (err?.errors) {
                     const messages: string[] = [];
-
-                    for (const key of Object.keys(err.errrors)) {
+                    /*
+                    for (const key of Object.keys(err.errors)) {
                         const fieldErrors: string[] = err.errors[key];
                         fieldErrors.forEach((message) => {
                             messages.push(`${key}: ${message}`);
                         });
                     }
-
+                    */
+                    for (const key of Object.keys(err.errors)) {
+                        const fieldErrors: string[] = err.errors[key];
+                        fieldErrors.forEach((message: string) => {
+                            messages.push(`${key}: ${message}`);
+                        });
+                    }
                     alert(`${err.message}\n\n${messages.join("\n")}`);
                     return;
                 }
-                throw new Error(err?.message || "Failed to create contract")
+                throw new Error(err?.message || "Failed to create contract")  
             }
 
             const savedContract = await response.json();
@@ -131,6 +139,34 @@ const CreateContract = () => {
                                 className="w-full rounded border border-gray-400 p-2 focus:border-blue-500 focus:outline-none"
                                 onChange={handleInputChange}
                                 value={formData.contractTotal}
+                                required
+                            />
+                        </div>
+
+                        <div className="flex flex-col">
+                            <label className="mb-1 font-semibold text-gray-600">
+                                Contract Start Date
+                            </label>
+                            <input
+                                type="date"
+                                name="contractStart"
+                                className="w-full rounded border border-gray-400 p-2 focus:border-blue-500 focus:outline-none"
+                                onChange={handleInputChange}
+                                value={formData.contractStart}
+                                required
+                            />
+                        </div>
+
+                        <div className="flex flex-col">
+                            <label className="mb-1 font-semibold text-gray-600">
+                                Contract End Date
+                            </label>
+                            <input
+                                type="date"
+                                name="contractEnd"
+                                className="w-full rounded border border-gray-400 p-2 focus:border-blue-500 focus:outline-none"
+                                onChange={handleInputChange}
+                                value={formData.contractEnd}
                                 required
                             />
                         </div>

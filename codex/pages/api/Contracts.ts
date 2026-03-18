@@ -17,6 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const {
             contractName,
             contractTotal,
+            contractStart,
+            contractEnd,
             tierAmount,
             tier1Rate,
             tier2Rate,
@@ -39,6 +41,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 INSERT INTO contracts (
                 contractname,
                 contracttotal,
+                contractstart,
+                contractend,
                 tieramount,
                 tier1rate,
                 tier2rate,
@@ -58,6 +62,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             VALUES (
                 ${contractName},
                 ${contractTotal},
+                ${contractStart},
+                ${contractEnd},
                 ${tierAmount},
                 ${tier1Rate},
                 ${tier2Rate},

@@ -4,6 +4,16 @@ import { z } from "zod";
 export const contractSchema = z.object({
     contractName: z.string().min(1, "Contract name is required"),
     contractTotal: z.coerce.number().min(0, "Contract total must be 0 or greater"),
+    //Changed the format of dates to be easier to read
+    contractStart: z
+        .string()
+        .min(1, "Contract start date is required")
+        .refine((val) => !isNaN(Date.parse(val)), { message: "Contract start date must be valid date", }),
+
+    contractEnd: z
+        .string()
+        .min(1, "Contract end date is required")
+        .refine((val) => !isNaN(Date.parse(val)), { message: "Contract end date must be valid date"}),
     //Tier section
     tierAmount: z.coerce.number().min(0, "Tier amount must be 0 or greater"),
     tier1Rate: z.coerce.number().min(0, "Tier 1 rate must be 0 or greater"),
