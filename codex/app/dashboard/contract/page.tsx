@@ -23,7 +23,12 @@ const ContractsPage = () => {
     };
 
     const handleView = (id: number) => {
-        console.log(`View contract with id: ${id}`);
+        //console.log(`View contract with id: ${id}`);
+        if (!id) {
+            console.error("No Contract ID available for viewing")
+            return;
+        }
+        router.push(`/dashboard/contract//viewContract?id=${id}`);
     };
 
     const handleEdit = (id: number) => {

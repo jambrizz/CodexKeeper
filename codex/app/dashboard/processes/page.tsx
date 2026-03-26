@@ -40,7 +40,7 @@ const ProcessesPage = () => {
     };
 
     const handleView = (id: number) => {
-        console.log("Process id :", id);
+        //console.log("Process id :", id);
         if (!id) {
             console.error("No process ID available for viewing");
             return;
