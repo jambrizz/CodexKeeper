@@ -25,14 +25,19 @@ const ContractsPage = () => {
     const handleView = (id: number) => {
         //console.log(`View contract with id: ${id}`);
         if (!id) {
-            console.error("No Contract ID available for viewing")
+            console.error("No Contract ID available for viewing.");
             return;
         }
-        router.push(`/dashboard/contract//viewContract?id=${id}`);
+        router.push(`/dashboard/contract/viewContract?id=${id}`);
     };
 
     const handleEdit = (id: number) => {
-        console.log(`Edit contract with id: ${id}`);
+        //console.log(`Edit contract with id: ${id}`);
+        if (!id) {
+            console.error("No Contract ID available for editing.");
+            return
+        }
+        router.push(`/dashboard/contract/updateContract?id=${id}`);
     };
 
     const handleDelete = async (id: number) => {
@@ -47,6 +52,8 @@ const ContractsPage = () => {
             });
 
             if (!response.ok) throw new Error(`Failed to delete contracts: ${response.statusText}`);
+
+            alert("Contract deleted successfully.");
 
             const updatedContracts = contracts.filter((contract) => contract.id !== id);
             setContracts(updatedContracts);
@@ -66,7 +73,7 @@ const ContractsPage = () => {
     const getAllContracts = async () => {
         try {
             const contractData = await getContractsFromAPI();
-            console.log("Fetched contracts from API", contractData);
+            //console.log("Fetched contracts from API", contractData);
             setContracts(contractData || []); // Defensive check
         } catch (error) {
             console.log("Error fetching contracts", error);

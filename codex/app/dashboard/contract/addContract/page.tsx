@@ -1,10 +1,10 @@
 "use client"
 
 import React from "react";
-import CreateContract from "@/app/components/contract/create";
+import ContractForm from "@/app/components/contract/ContractForm";
 
 const AddContract = () => {
-    return <CreateContract />;
+    return <ContractForm mode="create" />;
 };
 
 export default AddContract;
